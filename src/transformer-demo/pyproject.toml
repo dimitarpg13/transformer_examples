@@ -11,6 +11,7 @@ transformers = "^4.39.3"
 torch = "^2.2.2"
 matplotlib = "^3.8.4"
 datasets = "^2.18.0"
+torchvision = "^0.17.2"
 
 
 [build-system]
