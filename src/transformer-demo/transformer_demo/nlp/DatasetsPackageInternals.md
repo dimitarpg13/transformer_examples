@@ -12,7 +12,7 @@ class DatasetDict(dict):
     
 ```
 
-Members with docstrings:
+Members with docstrings and examples:
 ```python
 class DatasetDict(dict):
     @property
