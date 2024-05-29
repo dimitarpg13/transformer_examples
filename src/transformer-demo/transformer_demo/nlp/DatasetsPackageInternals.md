@@ -6,7 +6,9 @@ Summary of the members:
 class DatasetDict(dict):
     @property
     def data(self) -> Dict[str, Table]
+        """The Apache Arrow tables backing each split."""
 
+    
     
 ```
 
