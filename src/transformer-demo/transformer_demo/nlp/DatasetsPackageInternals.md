@@ -1,6 +1,16 @@
 # Datasets package internals
 
 ## Interface for DatasetDict
+Summary of the members:
+```python
+class DatasetDict(dict):
+    @property
+    def data(self) -> Dict[str, Table]
+
+    
+```
+
+Members with docstrings:
 ```python
 class DatasetDict(dict):
     @property
@@ -119,4 +129,28 @@ class DatasetDict(dict):
         })
         ```
         """
+
+    def unique(self, column: str) -> Dict[str, List]:
+        """Return a list of the unique elements in a column for each split.
+
+        This is implemented in the low-level backend and as such, very fast.
+
+        Args:
+            column (`str`):
+                column name (list all the column names with [`~datasets.Dataset.column_names`])
+
+        Returns:
+            Dict[`str`, `list`]: Dictionary of unique elements in the given column.
+
+        Example:
+
+        ```py
+        >>> from datasets import load_dataset
+        >>> ds = load_dataset("rotten_tomatoes")
+        >>> ds.unique("label")
+        {'test': [1, 0], 'train': [1, 0], 'validation': [1, 0]}
+        ```
+        """
+
+
 ```
