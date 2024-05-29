@@ -1,4 +1,4 @@
-# Datasets package internals
+# Datasets internals
 
 ## Interface for Features
 
