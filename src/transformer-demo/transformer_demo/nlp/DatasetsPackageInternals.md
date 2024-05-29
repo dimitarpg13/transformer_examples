@@ -1,5 +1,48 @@
 # Datasets package internals
 
+## Interface for Features
+
+Summary of the members:
+
+Docstrings and examples
+
+```python
+class Features(dict):
+    """A special dictionary that defines the internal structure of a dataset.
+
+    Instantiated with a dictionary of type `dict[str, FieldType]`, where keys are the desired column names,
+    and values are the type of that column.
+
+    `FieldType` can be one of the following:
+        - a [`~datasets.Value`] feature specifies a single typed value, e.g. `int64` or `string`.
+        - a [`~datasets.ClassLabel`] feature specifies a field with a predefined set of classes which can have labels
+          associated to them and will be stored as integers in the dataset.
+        - a python `dict` which specifies that the field is a nested field containing a mapping of sub-fields to sub-fields
+          features. It's possible to have nested fields of nested fields in an arbitrary manner.
+        - a python `list` or a [`~datasets.Sequence`] specifies that the field contains a list of objects. The python
+          `list` or [`~datasets.Sequence`] should be provided with a single sub-feature as an example of the feature
+          type hosted in this list.
+
+          <Tip>
+
+           A [`~datasets.Sequence`] with a internal dictionary feature will be automatically converted into a dictionary of
+           lists. This behavior is implemented to have a compatilbity layer with the TensorFlow Datasets library but may be
+           un-wanted in some cases. If you don't want this behavior, you can use a python `list` instead of the
+           [`~datasets.Sequence`].
+
+          </Tip>
+
+        - a [`Array2D`], [`Array3D`], [`Array4D`] or [`Array5D`] feature for multidimensional arrays.
+        - an [`Audio`] feature to store the absolute path to an audio file or a dictionary with the relative path
+          to an audio file ("path" key) and its bytes content ("bytes" key). This feature extracts the audio data.
+        - an [`Image`] feature to store the absolute path to an image file, an `np.ndarray` object, a `PIL.Image.Image` object
+          or a dictionary with the relative path to an image file ("path" key) and its bytes content ("bytes" key). This feature extracts the image data.
+        - [`~datasets.Translation`] and [`~datasets.TranslationVariableLanguages`], the two features specific to Machine Translation.
+    """
+
+```
+
+
 ## Interface for DatasetDict
 Summary of the members:
 ```python
@@ -12,7 +55,7 @@ class DatasetDict(dict):
     
 ```
 
-Members with docstrings and examples:
+Docstrings and examples:
 ```python
 class DatasetDict(dict):
     @property
