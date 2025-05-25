@@ -2,6 +2,12 @@
 
 ## Common Articles: repos, online materials, videos
 
+HuggingFace notebook examples: 
+
+  https://github.com/huggingface/notebooks/blob/main/examples
+
+### BERT fine-tuning
+
 [Python Tutorial to Fine-tune SBERT BI-Encoder with Domain-specific Training Dataset, Discover AI, youtube video, 2023](https://youtu.be/FidMAm-tj9k?si=oED-7avcJFsMrLyv)
 
 [Fine-Tune SBERT on specific Knowledge Domain with Cross-Encoder Sentence Transformers, Discover AI, youtube video, 2023](https://youtu.be/JxfS5ZjdxGE?si=a87k5dtQzQu1qTu8)
@@ -14,9 +20,11 @@
 
   dataset for the Phishing classification example: https://huggingface.co/datasets/shawhin/phishing-site-classification
 
-HuggingFace notebook examples: 
+[Universal Language Model Fine-tuning for Text Classification, Jeremy Howard, Sebastian Rudder, FastAI, 2018](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/Universal_Language_Model_Fine-tuning_for_Text_Classification_Howard_2018.pdf)
 
-  https://github.com/huggingface/notebooks/blob/main/examples
+[Semi-supervised Sequence Learning, A Dai, Quoc V. Le, Google, 2015](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/Semi-supervised_Sequence_Learning_Dai_2015.pdf)
+
+[BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding, J. Devlin et al, 2019](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/BERT-Pre-training_of_Deep_Bidirectional_Transformers_for_Language_Understanding_Devlin_2019.pdf)
 
 ## Tokenization
 
