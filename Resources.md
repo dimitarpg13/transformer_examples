@@ -37,6 +37,7 @@ HuggingFace notebook example:
 
 ## Embeddings
 
+[Word Embeddings with word2vec from Scratch in Python, Bradney Smith, 2024](https://medium.com/p/eb9326c6ab7c)
 
 ## Fine-tuning a pretrained model
 
@@ -58,6 +59,8 @@ HuggingFace notebook example on fine-tuning for question-answering:
 [Self-Attention Explained with Code, Bradney Smith, Medium, 2024](https://medium.com/data-science/contextual-transformer-embeddings-using-self-attention-explained-with-diagrams-and-python-code-d7a9f0f4d94e)
 
 ## BERT fine-tuning
+
+[A Complete Guide to BERT with Code by Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/A_Complete_Guide_to_BERT_with_Code_by_Bradney_Smith_Medium_2024.pdf)
 
 [Python Tutorial to Fine-tune SBERT BI-Encoder with Domain-specific Training Dataset, Discover AI, youtube video, 2023](https://youtu.be/FidMAm-tj9k?si=oED-7avcJFsMrLyv)
 
