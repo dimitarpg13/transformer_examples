@@ -1,6 +1,6 @@
 # Resources on Transformer Data Preparation, Trainng, and Fine-tuning 
 
-## Common Articles: repos, online materials, videos
+## Articles on Transformer Model Fine Tuning: repos, online materials, videos
 
 HuggingFace notebook examples: 
 
