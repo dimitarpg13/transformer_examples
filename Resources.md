@@ -12,4 +12,8 @@ HuggingFace notebook example: https://github.com/huggingface/notebooks/blob/main
 ## Embeddings
 
 
+## Fine-tuning a pretrained model
+
+HuggingFace notebook example: https://github.com/huggingface/notebooks/blob/main/transformers_doc/en/training.ipynb
+
 
