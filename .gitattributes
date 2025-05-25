@@ -6,3 +6,4 @@ articles/Future_Token_Prediction-Causal_Language_Modelling_with_Per-Token_Semant
 articles/On_Self-improving_Token_Embeddings_Kubek_2025.pdf filter=lfs diff=lfs merge=lfs -text
 articles/A_Text_is_Worth_Several_Tokens-Text_Embedding_from_LLMs_Secretly_Aligns_Well_with_The_Key_Tokens_Nie_2024.pdf filter=lfs diff=lfs merge=lfs -text
 articles/Analyzing_Transformers_in_Embedding_Space_Dar_2024.pdf filter=lfs diff=lfs merge=lfs -text
+articles/embeddings/Word_Embeddings_with_word2vec_from_Scratch_in_Python_by_Bradney_Smith_Medium_2024.pdf filter=lfs diff=lfs merge=lfs -text
