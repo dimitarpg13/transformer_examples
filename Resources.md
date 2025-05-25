@@ -22,8 +22,12 @@ HuggingFace notebook example on training:
 
   https://github.com/huggingface/notebooks/blob/main/transformers_doc/en/training.ipynb
 
-Hugging face notebook example on fine-tunning for classification: 
+HuggingFace notebook example on fine-tunning for classification: 
 
   https://github.com/huggingface/notebooks/blob/main/examples/text_classification.ipynb
+
+HuggingFace notebook example on fine-tuning for question-answering:
+
+  https://github.com/huggingface/notebooks/blob/main/examples/language_modeling.ipynb
 
 
