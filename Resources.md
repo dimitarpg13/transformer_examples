@@ -13,6 +13,8 @@ HuggingFace notebook examples:
 
 ## Tokenization
 
+[Tokenization: A Complete Guide, Byte-Pair Encoding, WordPiece, and more by Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/tokenization/Tokenization_A_Complete_Guide_Byte-Pair_Encoding_WordPiece_and_more_by_Bradney_Smith_Medium_2024.pdf)
+
 HuggingFace notebook example: 
 
   https://github.com/huggingface/notebooks/blob/main/examples/tokenizer_training.ipynb 
@@ -75,3 +77,7 @@ HuggingFace notebook example on fine-tuning for question-answering:
   dataset for the Phishing classification example: https://huggingface.co/datasets/shawhin/phishing-site-classification
 
 [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding, J. Devlin et al, 2019](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/BERT-Pre-training_of_Deep_Bidirectional_Transformers_for_Language_Understanding_Devlin_2019.pdf)
+
+## Mistral fine-tuning
+
+[Mistral 7B Explained: Towards More Efficient Language Models, Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/mistral/Mistral_7B_Explained_Towards_More_Efficient_Language_Models_by_Bradney_Smith_Medium_2024.pdf)
