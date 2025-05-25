@@ -2,11 +2,15 @@
 
 ## Common Articles: repos, online materials, videos
 
-HuggingFace notebook examples: https://github.com/huggingface/notebooks/blob/main/examples
+HuggingFace notebook examples: 
+
+  https://github.com/huggingface/notebooks/blob/main/examples
 
 ## Tokenization
 
-HuggingFace notebook example: https://github.com/huggingface/notebooks/blob/main/examples/tokenizer_training.ipynb 
+HuggingFace notebook example: 
+
+  https://github.com/huggingface/notebooks/blob/main/examples/tokenizer_training.ipynb 
 
 
 ## Embeddings
@@ -14,8 +18,12 @@ HuggingFace notebook example: https://github.com/huggingface/notebooks/blob/main
 
 ## Fine-tuning a pretrained model
 
-HuggingFace notebook example on training: https://github.com/huggingface/notebooks/blob/main/transformers_doc/en/training.ipynb
+HuggingFace notebook example on training: 
 
-Hugging face notebook example on fine-tunning for classification: https://github.com/huggingface/notebooks/blob/main/examples/text_classification.ipynb
+  https://github.com/huggingface/notebooks/blob/main/transformers_doc/en/training.ipynb
+
+Hugging face notebook example on fine-tunning for classification: 
+
+  https://github.com/huggingface/notebooks/blob/main/examples/text_classification.ipynb
 
 
