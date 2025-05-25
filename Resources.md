@@ -2,7 +2,7 @@
 
 ## Common Articles: repos, online materials, videos
 
-HugginFace notebook examples: https://github.com/huggingface/notebooks/blob/main/examples
+HuggingFace notebook examples: https://github.com/huggingface/notebooks/blob/main/examples
 
 ## Tokenization
 
