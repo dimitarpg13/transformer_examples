@@ -17,6 +17,23 @@ HuggingFace notebook example:
   https://github.com/huggingface/notebooks/blob/main/examples/tokenizer_training.ipynb 
 
 
+### Byte-Pair Encoding
+
+[Let's build the GPT Tokenizer, Andrej Karpathy, 2024](https://youtu.be/zduSFxRajkE?si=AOUNH7lcQiZH5FeV)
+
+  Supplementary links:
+
+  Google colab for the video: https://colab.research.google.com/drive/1y0KnCFZvGVf_odSfcNAws6kcDD7HsI0L?usp=sharing
+
+  GitHub repo for the video: minBPE: https://github.com/karpathy/minbpe
+
+  tiktokenizer: https://tiktokenizer.vercel.app
+  
+  tiktoken from OpenAI: https://github.com/openai/tiktoken
+  
+  sentencepiece from Google: https://github.com/google/sentencepiece
+
+
 ## Embeddings
 
 
