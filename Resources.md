@@ -6,6 +6,14 @@
 
 [Fine-Tune SBERT on specific Knowledge Domain with Cross-Encoder Sentence Transformers, Discover AI, youtube video, 2023](https://youtu.be/JxfS5ZjdxGE?si=a87k5dtQzQu1qTu8)
 
+[Fine-Tuning BERT for Text Classification (with Example Code), Shaw Talebi, 2024](https://youtu.be/4QHg8Ix8WWQ?si=DkQyws-ZPtiOJ5zS)
+
+  repo for the Phishing classification example: https://github.com/ShawhinT/YouTube-Blog/tree/main/LLMs/model-compression
+
+  model for the Phishing classification example: https://huggingface.co/shawhin/bert-phishing-classifier_teacher
+
+  dataset for the Phishing classification example: https://huggingface.co/datasets/shawhin/phishing-site-classification
+
 HuggingFace notebook examples: 
 
   https://github.com/huggingface/notebooks/blob/main/examples
