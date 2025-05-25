@@ -2,6 +2,9 @@
 
 ## Common Articles: repos, online materials, videos
 
+[
+Python Tutorial to Fine-tune SBERT BI-Encoder w/ my Domain-specific Training Dataset, Discover AI, 2023](https://youtu.be/FidMAm-tj9k?si=oED-7avcJFsMrLyv)
+
 HuggingFace notebook examples: 
 
   https://github.com/huggingface/notebooks/blob/main/examples
