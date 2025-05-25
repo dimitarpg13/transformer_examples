@@ -3,3 +3,4 @@ articles/Cross-encoders_vs_Bi-encoders_a_deep_dive_into_text_encoding_methods_by
 articles/bert/Cross-encoders_vs_Bi-encoders_a_deep_dive_into_text_encoding_methods_by_Rahul_Bhatia_Medium.pdf filter=lfs diff=lfs merge=lfs -text
 notebooks/bert/Wine_Prediction_with_RoBERTa_using_compound_query.ipynb filter=lfs diff=lfs merge=lfs -text
 articles/Future_Token_Prediction-Causal_Language_Modelling_with_Per-Token_Semantic_State_Vector_for_Multi-Token_Prediction_Walker_2024.pdf filter=lfs diff=lfs merge=lfs -text
+articles/On_Self-improving_Token_Embeddings_Kubek_2025.pdf filter=lfs diff=lfs merge=lfs -text
