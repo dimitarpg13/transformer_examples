@@ -10,3 +10,4 @@ articles/embeddings/Word_Embeddings_with_word2vec_from_Scratch_in_Python_by_Brad
 articles/bert/A_Complete_Guide_to_BERT_with_Code_by_Bradney_Smith_Medium_2024.pdf filter=lfs diff=lfs merge=lfs -text
 articles/tokenization/Tokenization_A_Complete_Guide_Byte-Pair_Encoding_WordPiece_and_more_by_Bradney_Smith_Medium_2024.pdf filter=lfs diff=lfs merge=lfs -text
 articles/attention/Self-Attention_Explained_with_Code_by_Bradney_Smith_Medium_2024.pdf filter=lfs diff=lfs merge=lfs -text
+articles/mistral/Mistral_7B_Explained_Towards_More_Efficient_Language_Models_by_Bradney_Smith_Medium_2024.pdf filter=lfs diff=lfs merge=lfs -text
