@@ -1,4 +1,4 @@
-# Resources on Bi-Directional Encoder Representations of Transformers
+# Resources on Transformer Data Preparation, Trainng, and Fine-tuning 
 
 ## Common Articles: repos, online materials, videos
 
