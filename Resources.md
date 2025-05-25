@@ -14,6 +14,8 @@ HuggingFace notebook example: https://github.com/huggingface/notebooks/blob/main
 
 ## Fine-tuning a pretrained model
 
-HuggingFace notebook example: https://github.com/huggingface/notebooks/blob/main/transformers_doc/en/training.ipynb
+HuggingFace notebook example on training: https://github.com/huggingface/notebooks/blob/main/transformers_doc/en/training.ipynb
+
+Hugging face notebook example on fine-tunning for classification: https://github.com/huggingface/notebooks/blob/main/examples/text_classification.ipynb
 
 
