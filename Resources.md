@@ -41,6 +41,12 @@ HuggingFace notebook example:
 
 [Word Embeddings with word2vec from Scratch in Python, Bradney Smith, 2024](https://medium.com/p/eb9326c6ab7c)
 
+## Loss Functions
+
+Sentence Transformers Loss Functions: https://sbert.net/docs/package_reference/sentence_transformer/losses.html
+
+[Efficient Natural Language Response Suggestion for Smart Reply, M. Henderson et al, 2017](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/loss_functions/Efficient_Natural_Language_Response_Suggestion_for_Smart_Reply_Henderson_2017.pdf)
+
 ## Fine-tuning a pretrained model
 
 HuggingFace notebook example on training: 
