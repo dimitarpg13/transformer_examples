@@ -81,3 +81,8 @@ HuggingFace notebook example on fine-tuning for question-answering:
 ## Mistral fine-tuning
 
 [Mistral 7B Explained: Towards More Efficient Language Models, Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/mistral/Mistral_7B_Explained_Towards_More_Efficient_Language_Models_by_Bradney_Smith_Medium_2024.pdf)
+
+## BERT pre-training
+
+[Pre-Train BERT from scratch: Solution for Company Domain Knowledge Data, Discover AI, youtube video, 2023](https://youtu.be/IcrN_L2w0_Y?si=C4mWIUrcxk-8HByx)
+
