@@ -12,6 +12,15 @@ HuggingFace notebook examples:
 
 [NLP with Deep Learning, Rohan Paul, 2022, series of 40 youtube videos](https://www.youtube.com/playlist?list=PLxqBkZuBynVTn2lkHNAcw6lgm1MD5QiMK)
 
+## Dense Text Representations
+
+[Introduction to Dense Text Representations - Part 1, Nils Reimers, Jun 21, 2021](https://youtu.be/qmN1fJ7Fdmo?si=sR50ZrGXURzY_weS)
+
+[Introduction to Dense Text Representations - Part 2, Nils Reimers, Jun 21, 2021](https://youtu.be/0RV-q0--NLs?si=8cktLBFigHlNZzi-)
+
+[Introduction to Dense Text Representation - Part 3, Nils Reimers, Jun 21, 2021](https://youtu.be/t4Gf4LruVZ4?si=C2fjB45Vsye0t97p)
+
+
 ## Tokenization
 
 [Tokenization: A Complete Guide, Byte-Pair Encoding, WordPiece, and more by Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/tokenization/Tokenization_A_Complete_Guide_Byte-Pair_Encoding_WordPiece_and_more_by_Bradney_Smith_Medium_2024.pdf)
@@ -44,6 +53,10 @@ HuggingFace notebook example:
 ## Embeddings
 
 [Word Embeddings with word2vec from Scratch in Python, Bradney Smith, 2024](https://medium.com/p/eb9326c6ab7c)
+
+[Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks, Nils Reimers and Iryna Gurevych, 2019](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/Sentence-BERT-Sentence_Embeddings_using_Siamese_BERT-Networks_Reimers_2019.pdf)
+
+[Training State-of-the-Art Sentence Embedding Models, Nils Reimers, youtube video, Jun 30, 2021](https://youtu.be/RHXZKUr8qOY?si=5PIDz7nPaWtCwoy1)
 
 ## Loss Functions
 
@@ -95,4 +108,10 @@ HuggingFace notebook example on fine-tuning for question-answering:
 ## BERT pre-training
 
 [Pre-Train BERT from scratch: Solution for Company Domain Knowledge Data, Discover AI, youtube video, 2023](https://youtu.be/IcrN_L2w0_Y?si=C4mWIUrcxk-8HByx)
+
+
+## Semantic Search
+
+[Semantic Search with Sentence Transformers, Discover AI, 2022](https://youtu.be/ewlCCB7EFPs?si=39x3WjNZQIyofWUm)
+
 
