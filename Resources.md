@@ -45,6 +45,8 @@ HuggingFace notebook example:
 
 [Word Embeddings with word2vec from Scratch in Python, Bradney Smith, 2024](https://medium.com/p/eb9326c6ab7c)
 
+[Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks, Nils Reimers and Iryna Gurevych, 2019](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/Sentence-BERT-Sentence_Embeddings_using_Siamese_BERT-Networks_Reimers_2019.pdf)
+
 ## Loss Functions
 
 Sentence Transformers Loss Functions: https://sbert.net/docs/package_reference/sentence_transformer/losses.html
@@ -95,4 +97,10 @@ HuggingFace notebook example on fine-tuning for question-answering:
 ## BERT pre-training
 
 [Pre-Train BERT from scratch: Solution for Company Domain Knowledge Data, Discover AI, youtube video, 2023](https://youtu.be/IcrN_L2w0_Y?si=C4mWIUrcxk-8HByx)
+
+
+## Semantic Search
+
+[Semantic Search with Sentence Transformers, Discover AI, 2022](https://youtu.be/ewlCCB7EFPs?si=39x3WjNZQIyofWUm)
+
 
