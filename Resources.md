@@ -10,6 +10,7 @@ HuggingFace notebook examples:
 
 [Semi-supervised Sequence Learning, A Dai, Quoc V. Le, Google, 2015](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/Semi-supervised_Sequence_Learning_Dai_2015.pdf)
 
+[NLP with Deep Learning, Rohan Paul, 2022, series of 40 youtube videos](https://www.youtube.com/playlist?list=PLxqBkZuBynVTn2lkHNAcw6lgm1MD5QiMK)
 
 ## Tokenization
 
