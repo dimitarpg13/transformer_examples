@@ -36,9 +36,9 @@ HuggingFace notebook example:
   
   sentencepiece from Google: https://github.com/google/sentencepiece
 
-[Byte Pair Encoding Tokenization, HuggingFace, 2022](https://www.youtube.com/watch?v=HEikzVL-lZU)
+[Byte Pair Encoding Tokenization, HuggingFace, youtube video, 2022](https://www.youtube.com/watch?v=HEikzVL-lZU)
 
-[Byte Pair Encoding, From Languages to Information, 2022](https://www.youtube.com/watch?v=tOMjTCO0htA)
+[Byte Pair Encoding, From Languages to Information, youtube video, 2022](https://www.youtube.com/watch?v=tOMjTCO0htA)
 
 ## Embeddings
 
