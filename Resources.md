@@ -47,6 +47,8 @@ HuggingFace notebook example:
 
 [Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks, Nils Reimers and Iryna Gurevych, 2019](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/Sentence-BERT-Sentence_Embeddings_using_Siamese_BERT-Networks_Reimers_2019.pdf)
 
+[Training State-of-the-Art Sentence Embedding Models, Nils Reimers, youtube video, Jun 30, 2021](https://youtu.be/RHXZKUr8qOY?si=5PIDz7nPaWtCwoy1)
+
 ## Loss Functions
 
 Sentence Transformers Loss Functions: https://sbert.net/docs/package_reference/sentence_transformer/losses.html
