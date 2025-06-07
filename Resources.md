@@ -12,6 +12,15 @@ HuggingFace notebook examples:
 
 [NLP with Deep Learning, Rohan Paul, 2022, series of 40 youtube videos](https://www.youtube.com/playlist?list=PLxqBkZuBynVTn2lkHNAcw6lgm1MD5QiMK)
 
+## Dense Text Representations
+
+[Introduction to Dense Text Representations - Part 1, Nils Reimers, Jun 21, 2021](https://youtu.be/qmN1fJ7Fdmo?si=sR50ZrGXURzY_weS)
+
+[Introduction to Dense Text Representations - Part 2, Nils Reimers, Jun 21, 2021](https://youtu.be/0RV-q0--NLs?si=8cktLBFigHlNZzi-)
+
+[Introduction to Dense Text Representation - Part 3, Nils Reimers, Jun 21, 2021](https://youtu.be/t4Gf4LruVZ4?si=C2fjB45Vsye0t97p)
+
+
 ## Tokenization
 
 [Tokenization: A Complete Guide, Byte-Pair Encoding, WordPiece, and more by Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/tokenization/Tokenization_A_Complete_Guide_Byte-Pair_Encoding_WordPiece_and_more_by_Bradney_Smith_Medium_2024.pdf)
