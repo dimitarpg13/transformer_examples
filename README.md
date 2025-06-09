@@ -1,3 +1,3 @@
-# Resources and Examples Fine-Tuning of Transformers
+# Resources and Examples on Pre-Training, Fine-Tuning and Applying Use Cases to Pre-Trained and Fine-Tuned Transformer Models
 
 
