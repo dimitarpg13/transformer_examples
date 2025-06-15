@@ -52,6 +52,8 @@ HuggingFace notebook example:
 
 ## Embeddings
 
+[Sentence Embeddings. Introduction to Sentence Embeddings, https://osanseviero.github.io blog, 2024](https://osanseviero.github.io/hackerllama/blog/posts/sentence_embeddings/)
+
 [Word Embeddings with word2vec from Scratch in Python, Bradney Smith, 2024](https://medium.com/p/eb9326c6ab7c)
 
 [How to train a model to generate image embeddings from scratch, Underfitted, 2024](https://youtu.be/GikIJpUv6oo?si=qlFn69mI-jzw-EDf)
