@@ -95,7 +95,7 @@ HuggingFace notebook example on fine-tuning for question-answering:
 
 [Training State-of-the-Art Sentence Embedding Models, Nils Reimers, youtube video, Jun 30, 2021](https://youtu.be/RHXZKUr8qOY?si=5PIDz7nPaWtCwoy1)
 
-related url: https://www.sbert.net/docs/package_reference/sentence_transformer/losses.html#multiplenegativesrankingloss
+SBERT's MultipleNegativesRankingLoss: https://www.sbert.net/docs/package_reference/sentence_transformer/losses.html#multiplenegativesrankingloss
 
 ### BERT fine-tuning
 
