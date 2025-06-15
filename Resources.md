@@ -83,6 +83,12 @@ HuggingFace notebook example on fine-tuning for question-answering:
 
 ## BERT and SBERT 
 
+[BERT Explained](https://youtu.be/xI0HHN5XKDo?si=CJLDvv8Fd13A9Ri6)
+
+[SBERT Explained, CodeEmporium, 2022](https://youtu.be/O3xbVmpdJwU?si=v9X7xjFylkEi-HSB)
+
+SBERT docs: https://sbert.net/
+
 [A Complete Guide to BERT with Code by Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/A_Complete_Guide_to_BERT_with_Code_by_Bradney_Smith_Medium_2024.pdf)
 
 ### SBERT/BERT embeddings
