@@ -130,7 +130,7 @@ SBERT's MultipleNegativesRankingLoss: https://www.sbert.net/docs/package_referen
 
 ### Semantic Search with SBERT
 
-[Semantic Search with Sentence Transformers, sbert.net](https://sbert.net/examples/sentence_transformer/applications/semantic-search/README.html)
+[Semantic Search with Sentence Transformers, sbert.net README](https://sbert.net/examples/sentence_transformer/applications/semantic-search/README.html)
 
 [Semantic Search with Sentence Transformers, Discover AI, 2022](https://youtu.be/ewlCCB7EFPs?si=39x3WjNZQIyofWUm)
 
