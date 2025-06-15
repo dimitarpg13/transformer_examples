@@ -85,19 +85,19 @@ HuggingFace notebook example on fine-tuning for question-answering:
 
 [A Complete Guide to BERT with Code by Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/A_Complete_Guide_to_BERT_with_Code_by_Bradney_Smith_Medium_2024.pdf)
 
-### SBERT and BERT embeddings
+### SBERT/BERT embeddings
 
 [SBERT (Sentence Transformers) is not BERT Sentence Embedding: Intro & Tutorial, Discover AI, 2023](https://youtu.be/lVqwznaVi78?si=-MJoRX51Z7P9un4P)
 
 [Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks, Nils Reimers and Iryna Gurevych, 2019](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/Sentence-BERT-Sentence_Embeddings_using_Siamese_BERT-Networks_Reimers_2019.pdf)
 
-### SBERT Loss functions 
+### SBERT/BERT Loss functions 
 
 [Training State-of-the-Art Sentence Embedding Models, Nils Reimers, youtube video, Jun 30, 2021](https://youtu.be/RHXZKUr8qOY?si=5PIDz7nPaWtCwoy1)
 
 SBERT's MultipleNegativesRankingLoss: https://www.sbert.net/docs/package_reference/sentence_transformer/losses.html#multiplenegativesrankingloss
 
-### BERT fine-tuning
+### BERT/SBERT fine-tuning
 
 
 [Python Tutorial to Fine-tune SBERT BI-Encoder with Domain-specific Training Dataset, Discover AI, youtube video, 2023](https://youtu.be/FidMAm-tj9k?si=oED-7avcJFsMrLyv)
@@ -121,8 +121,6 @@ SBERT's MultipleNegativesRankingLoss: https://www.sbert.net/docs/package_referen
 ### BERT pre-training
 
 [Pre-Train BERT from scratch: Solution for Company Domain Knowledge Data, Discover AI, youtube video, 2023](https://youtu.be/IcrN_L2w0_Y?si=C4mWIUrcxk-8HByx)
-
-### SBERT Sentence Transformers
 
 ### Semantic Search with SBERT
 
