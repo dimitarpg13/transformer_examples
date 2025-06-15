@@ -124,6 +124,8 @@ SBERT's MultipleNegativesRankingLoss: https://www.sbert.net/docs/package_referen
 
 [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding, J. Devlin et al, 2019](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/BERT-Pre-training_of_Deep_Bidirectional_Transformers_for_Language_Understanding_Devlin_2019.pdf)
 
+[Fine-tuning SBERT: TSDAE, SimCSE and CT, Discover AI, 2021](https://youtu.be/6yPWtdgs5Sg?si=qhSTGK2okSJeqQXJ)
+
 ### Mistral fine-tuning
 
 [Mistral 7B Explained: Towards More Efficient Language Models, Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/mistral/Mistral_7B_Explained_Towards_More_Efficient_Language_Models_by_Bradney_Smith_Medium_2024.pdf)
