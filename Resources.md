@@ -54,6 +54,8 @@ HuggingFace notebook example:
 
 [Word Embeddings with word2vec from Scratch in Python, Bradney Smith, 2024](https://medium.com/p/eb9326c6ab7c)
 
+[How to train a model to generate image embeddings from scratch, Underfitted, 2024](https://youtu.be/GikIJpUv6oo?si=qlFn69mI-jzw-EDf)
+
 [Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks, Nils Reimers and Iryna Gurevych, 2019](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/Sentence-BERT-Sentence_Embeddings_using_Siamese_BERT-Networks_Reimers_2019.pdf)
 
 ## Loss Functions
