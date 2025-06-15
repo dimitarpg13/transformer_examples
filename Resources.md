@@ -83,9 +83,14 @@ HuggingFace notebook example on fine-tuning for question-answering:
 
 [Self-Attention Explained with Code, Bradney Smith, Medium, 2024](https://medium.com/data-science/contextual-transformer-embeddings-using-self-attention-explained-with-diagrams-and-python-code-d7a9f0f4d94e)
 
-## BERT fine-tuning
+## BERT and SBERT 
 
 [A Complete Guide to BERT with Code by Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/A_Complete_Guide_to_BERT_with_Code_by_Bradney_Smith_Medium_2024.pdf)
+
+[SBERT (Sentence Transformers) is not BERT Sentence Embedding: Intro & Tutorial, Discover AI, 2023](https://youtu.be/lVqwznaVi78?si=-MJoRX51Z7P9un4P)
+
+### BERT fine-tuning
+
 
 [Python Tutorial to Fine-tune SBERT BI-Encoder with Domain-specific Training Dataset, Discover AI, youtube video, 2023](https://youtu.be/FidMAm-tj9k?si=oED-7avcJFsMrLyv)
 
@@ -101,16 +106,17 @@ HuggingFace notebook example on fine-tuning for question-answering:
 
 [BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding, J. Devlin et al, 2019](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/bert/BERT-Pre-training_of_Deep_Bidirectional_Transformers_for_Language_Understanding_Devlin_2019.pdf)
 
-## Mistral fine-tuning
+### Mistral fine-tuning
 
 [Mistral 7B Explained: Towards More Efficient Language Models, Bradney Smith, Medium, 2024](https://github.com/dimitarpg13/transformer_finetuning/blob/main/articles/mistral/Mistral_7B_Explained_Towards_More_Efficient_Language_Models_by_Bradney_Smith_Medium_2024.pdf)
 
-## BERT pre-training
+### BERT pre-training
 
 [Pre-Train BERT from scratch: Solution for Company Domain Knowledge Data, Discover AI, youtube video, 2023](https://youtu.be/IcrN_L2w0_Y?si=C4mWIUrcxk-8HByx)
 
+### SBERT Sentence Transformers
 
-## Semantic Search
+### Semantic Search with SBERT
 
 [Semantic Search with Sentence Transformers, Discover AI, 2022](https://youtu.be/ewlCCB7EFPs?si=39x3WjNZQIyofWUm)
 
