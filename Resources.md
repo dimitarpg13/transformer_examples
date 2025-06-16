@@ -105,6 +105,8 @@ SBERT docs: https://sbert.net/
 
 [Training State-of-the-Art Sentence Embedding Models, Nils Reimers, youtube video, Jun 30, 2021](https://youtu.be/RHXZKUr8qOY?si=5PIDz7nPaWtCwoy1)
 
+[Training State-of-the-Art Text Embedding & Neural Search Models, Nils Reimers, youtube video, Sep 21, 2023](https://youtu.be/XHY-3FzaLGc?si=TpW-Kp3uZXIiVZpX)
+
 SBERT's MultipleNegativesRankingLoss: https://www.sbert.net/docs/package_reference/sentence_transformer/losses.html#multiplenegativesrankingloss
 
 ### BERT/SBERT fine-tuning
@@ -139,5 +141,7 @@ SBERT's MultipleNegativesRankingLoss: https://www.sbert.net/docs/package_referen
 [Semantic Search with Sentence Transformers, sbert.net README](https://sbert.net/examples/sentence_transformer/applications/semantic-search/README.html)
 
 [Semantic Search with Sentence Transformers, Discover AI, 2022](https://youtu.be/ewlCCB7EFPs?si=39x3WjNZQIyofWUm)
+
+[Introduction - Recent Developments in Neural Search, Nils Reimers, Sep 20, 2021](https://youtu.be/ukIYZw3uRX0?si=A7akXaNNuSpBS0WN)
 
 
