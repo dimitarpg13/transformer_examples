@@ -147,4 +147,7 @@ SBERT's MultipleNegativesRankingLoss: https://www.sbert.net/docs/package_referen
 
 [Recent Developments in Neural Search, Nils Reimers, Sep 20, 2021](https://youtu.be/ukIYZw3uRX0?si=A7akXaNNuSpBS0WN)
 
+[Facebook AI Similarity Search (FAISS) - Introduction to Similarity Search, James Briggs, 2021](https://youtu.be/sKyvsdEv6rk?si=-w_Ws6RDnpe2CrTS)
+
+
 
