@@ -52,6 +52,8 @@ HuggingFace notebook example:
 
 ## Embeddings
 
+[Embeddings: What they are and why they matter, youtube talk, Simon Willison, 2023](https://youtu.be/ArnMdc-ICCM?si=rtB_W_qcpRhKiUr5)
+
 [Sentence Embeddings. Introduction to Sentence Embeddings, https://osanseviero.github.io blog, 2024](https://osanseviero.github.io/hackerllama/blog/posts/sentence_embeddings/)
 
 [Word Embeddings with word2vec from Scratch in Python, Bradney Smith, 2024](https://medium.com/p/eb9326c6ab7c)
