@@ -142,6 +142,6 @@ SBERT's MultipleNegativesRankingLoss: https://www.sbert.net/docs/package_referen
 
 [Semantic Search with Sentence Transformers, Discover AI, 2022](https://youtu.be/ewlCCB7EFPs?si=39x3WjNZQIyofWUm)
 
-[Introduction - Recent Developments in Neural Search, Nils Reimers, Sep 20, 2021](https://youtu.be/ukIYZw3uRX0?si=A7akXaNNuSpBS0WN)
+[Recent Developments in Neural Search, Nils Reimers, Sep 20, 2021](https://youtu.be/ukIYZw3uRX0?si=A7akXaNNuSpBS0WN)
 
 
