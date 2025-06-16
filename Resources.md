@@ -84,6 +84,7 @@ HuggingFace notebook example on fine-tuning for question-answering:
 
 
 ## Attention
+[Attention in transformers, step-by-step | DL6,  youtube video, 3Blue1Brown, 2024](https://youtu.be/eMlx5fFNoYc?si=sJE2moeeUmOhsKW6)
 
 [Self-Attention Explained with Code, Bradney Smith, Medium, 2024](https://medium.com/data-science/contextual-transformer-embeddings-using-self-attention-explained-with-diagrams-and-python-code-d7a9f0f4d94e)
 
