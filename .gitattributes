@@ -12,3 +12,4 @@ articles/tokenization/Tokenization_A_Complete_Guide_Byte-Pair_Encoding_WordPiece
 articles/attention/Self-Attention_Explained_with_Code_by_Bradney_Smith_Medium_2024.pdf filter=lfs diff=lfs merge=lfs -text
 articles/mistral/Mistral_7B_Explained_Towards_More_Efficient_Language_Models_by_Bradney_Smith_Medium_2024.pdf filter=lfs diff=lfs merge=lfs -text
 docs/Why_When_and_How_to_Fine-Tune_a_Custom_Embedding_Model_Weaviate.pdf filter=lfs diff=lfs merge=lfs -text
+articles/chunking/Is_Semantic_Chunking_Worth_the_Computational_Cost_Qu_2024.pdf filter=lfs diff=lfs merge=lfs -text
