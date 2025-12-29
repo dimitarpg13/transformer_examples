@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bi-Encoders vs Cross-Encoders: Architecture & Applications</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .architecture-section {
+            margin-bottom: 60px;
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        h3 {
+            color: #764ba2;
+            font-size: 1.4rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        
+        .diagram-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        
+        .card h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .use-case-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .use-case-list li {
+            padding: 12px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .use-case-list li:hover {
+            border-left-width: 8px;
+            padding-left: 16px;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .pros, .cons {
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .pros {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+        
+        .cons {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+        
+        .pros h5, .cons h5 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .pros h5 {
+            color: #155724;
+        }
+        
+        .cons h5 {
+            color: #721c24;
+        }
+        
+        ul {
+            margin-left: 20px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .performance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .performance-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .performance-table th,
+        .performance-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .performance-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 5px solid #f39c12;
+        }
+        
+        .code-example {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        
+        @media (max-width: 768px) {
+            .comparison-grid,
+            .pros-cons {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Bi-Encoders vs Cross-Encoders</h1>
+            <p class="subtitle">Comprehensive Architecture Comparison & Use Cases</p>
+        </header>
+        
+        <div class="content">
+            <!-- Bi-Encoder Section -->
+            <div class="architecture-section">
+                <h2>1. Bi-Encoder Architecture</h2>
+                
+                <div class="diagram-container">
+                    <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Title -->
+                        <text x="400" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#667eea">
+                            Bi-Encoder Architecture: Independent Encoding
+                        </text>
+                        
+                        <!-- Query Path -->
+                        <g id="query-path">
+                            <!-- Query Input -->
+                            <rect x="50" y="80" width="120" height="40" fill="#667eea" rx="5"/>
+                            <text x="110" y="105" text-anchor="middle" fill="white" font-size="14">Query</text>
+                            <text x="110" y="140" text-anchor="middle" font-size="12" fill="#666">
+                                "What is RAG?"
+                            </text>
+                            
+                            <!-- Arrow to Encoder -->
+                            <path d="M 170 100 L 220 100" stroke="#667eea" stroke-width="2" 
+                                  marker-end="url(#arrowhead-purple)"/>
+                            
+                            <!-- Query Encoder -->
+                            <rect x="220" y="70" width="140" height="60" fill="#f8f9fa" stroke="#667eea" 
+                                  stroke-width="2" rx="5"/>
+                            <text x="290" y="95" text-anchor="middle" font-weight="bold" font-size="13">
+                                Query Encoder
+                            </text>
+                            <text x="290" y="115" text-anchor="middle" font-size="11" fill="#666">
+                                (BERT/RoBERTa)
+                            </text>
+                            
+                            <!-- Arrow to Embedding -->
+                            <path d="M 360 100 L 410 100" stroke="#667eea" stroke-width="2" 
+                                  marker-end="url(#arrowhead-purple)"/>
+                            
+                            <!-- Query Embedding -->
+                            <rect x="410" y="80" width="100" height="40" fill="#d4edda" rx="5"/>
+                            <text x="460" y="100" text-anchor="middle" font-size="12">Query</text>
+                            <text x="460" y="112" text-anchor="middle" font-size="11">Embedding</text>
+                            <text x="460" y="135" text-anchor="middle" font-size="10" fill="#666">
+                                [768 dims]
+                            </text>
+                        </g>
+                        
+                        <!-- Document Path -->
+                        <g id="document-path">
+                            <!-- Document Input -->
+                            <rect x="50" y="200" width="120" height="40" fill="#764ba2" rx="5"/>
+                            <text x="110" y="225" text-anchor="middle" fill="white" font-size="14">Document</text>
+                            <text x="110" y="260" text-anchor="middle" font-size="12" fill="#666">
+                                "RAG combines..."
+                            </text>
+                            
+                            <!-- Arrow to Encoder -->
+                            <path d="M 170 220 L 220 220" stroke="#764ba2" stroke-width="2" 
+                                  marker-end="url(#arrowhead-violet)"/>
+                            
+                            <!-- Document Encoder -->
+                            <rect x="220" y="190" width="140" height="60" fill="#f8f9fa" stroke="#764ba2" 
+                                  stroke-width="2" rx="5"/>
+                            <text x="290" y="215" text-anchor="middle" font-weight="bold" font-size="13">
+                                Doc Encoder
+                            </text>
+                            <text x="290" y="235" text-anchor="middle" font-size="11" fill="#666">
+                                (Same/Different)
+                            </text>
+                            
+                            <!-- Arrow to Embedding -->
+                            <path d="M 360 220 L 410 220" stroke="#764ba2" stroke-width="2" 
+                                  marker-end="url(#arrowhead-violet)"/>
+                            
+                            <!-- Document Embedding -->
+                            <rect x="410" y="200" width="100" height="40" fill="#f8d7da" rx="5"/>
+                            <text x="460" y="220" text-anchor="middle" font-size="12">Doc</text>
+                            <text x="460" y="232" text-anchor="middle" font-size="11">Embedding</text>
+                            <text x="460" y="255" text-anchor="middle" font-size="10" fill="#666">
+                                [768 dims]
+                            </text>
+                        </g>
+                        
+                        <!-- Similarity Computation -->
+                        <g id="similarity">
+                            <!-- Arrows to similarity -->
+                            <path d="M 460 120 L 460 160 L 560 160" stroke="#333" stroke-width="2" 
+                                  marker-end="url(#arrowhead)"/>
+                            <path d="M 460 200 L 460 160 L 560 160" stroke="#333" stroke-width="2"/>
+                            
+                            <!-- Similarity Box -->
+                            <rect x="560" y="140" width="140" height="40" fill="#ffeaa7" stroke="#f39c12" 
+                                  stroke-width="2" rx="5"/>
+                            <text x="630" y="165" text-anchor="middle" font-weight="bold" font-size="13">
+                                Cosine Similarity
+                            </text>
+                            
+                            <!-- Arrow to Score -->
+                            <path d="M 700 160 L 730 160" stroke="#f39c12" stroke-width="2" 
+                                  marker-end="url(#arrowhead-orange)"/>
+                            
+                            <!-- Score -->
+                            <circle cx="760" cy="160" r="25" fill="#28a745"/>
+                            <text x="760" y="165" text-anchor="middle" fill="white" font-size="14">0.89</text>
+                        </g>
+                        
+                        <!-- Key Features Box -->
+                        <g id="features">
+                            <rect x="50" y="320" width="700" height="150" fill="#f8f9fa" stroke="#667eea" 
+                                  stroke-width="1" rx="10" stroke-dasharray="5,5"/>
+                            <text x="400" y="345" text-anchor="middle" font-size="16" font-weight="bold" 
+                                  fill="#667eea">Key Characteristics</text>
+                            
+                            <text x="70" y="375" font-size="13" fill="#333">
+                                ✓ Independent encoding allows pre-computation of document embeddings
+                            </text>
+                            <text x="70" y="400" font-size="13" fill="#333">
+                                ✓ Fast similarity search using vector operations (dot product, cosine)
+                            </text>
+                            <text x="70" y="425" font-size="13" fill="#333">
+                                ✓ Scalable to millions of documents with approximate nearest neighbor search
+                            </text>
+                            <text x="70" y="450" font-size="13" fill="#333">
+                                ✓ Can use different encoders for queries and documents (asymmetric)
+                            </text>
+                        </g>
+                        
+                        <!-- Arrow markers -->
+                        <defs>
+                            <marker id="arrowhead" markerWidth="10" markerHeight="10" 
+                                    refX="9" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#333"/>
+                            </marker>
+                            <marker id="arrowhead-purple" markerWidth="10" markerHeight="10" 
+                                    refX="9" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#667eea"/>
+                            </marker>
+                            <marker id="arrowhead-violet" markerWidth="10" markerHeight="10" 
+                                    refX="9" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#764ba2"/>
+                            </marker>
+                            <marker id="arrowhead-orange" markerWidth="10" markerHeight="10" 
+                                    refX="9" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#f39c12"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <h3>How Bi-Encoders Work</h3>
+                <p>Bi-encoders process queries and documents independently through separate (or shared) encoder networks. This independence is the key to their efficiency:</p>
+                
+                <ul>
+                    <li><strong>Encoding Phase:</strong> Each text (query or document) is transformed into a fixed-size dense vector representation</li>
+                    <li><strong>Pre-computation:</strong> Document embeddings can be computed once and stored in a vector database</li>
+                    <li><strong>Similarity Calculation:</strong> Use efficient vector operations (cosine similarity, dot product) to find matches</li>
+                    <li><strong>Retrieval:</strong> Leverage approximate nearest neighbor (ANN) algorithms for sub-linear search time</li>
+                </ul>
+                
+                <div class="highlight-box">
+                    <strong>💡 Key Insight:</strong> The independence of encoding enables massive scalability - you only need to encode new queries at inference time, while millions of document embeddings can be pre-computed and indexed.
+                </div>
+                
+                <h3>Primary Use Cases for Bi-Encoders</h3>
+                
+                <div class="comparison-grid">
+                    <div class="card">
+                        <h4>🔍 Semantic Search</h4>
+                        <ul class="use-case-list">
+                            <li>Large-scale document retrieval (millions of documents)</li>
+                            <li>Real-time search engines</li>
+                            <li>FAQ matching systems</li>
+                            <li>Similar product discovery</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>📊 Clustering & Classification</h4>
+                        <ul class="use-case-list">
+                            <li>Document clustering</li>
+                            <li>Topic modeling</li>
+                            <li>Duplicate detection</li>
+                            <li>Content recommendation</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>🚀 First-Stage Retrieval</h4>
+                        <ul class="use-case-list">
+                            <li>Candidate generation for RAG</li>
+                            <li>Initial filtering in QA systems</li>
+                            <li>Broad retrieval from knowledge bases</li>
+                            <li>Multi-stage ranking pipelines</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>⚡ Real-time Applications</h4>
+                        <ul class="use-case-list">
+                            <li>Chatbot response retrieval</li>
+                            <li>Auto-complete suggestions</li>
+                            <li>Live content matching</li>
+                            <li>Streaming data deduplication</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cross-Encoder Section -->
+            <div class="architecture-section">
+                <h2>2. Cross-Encoder Architecture</h2>
+                
+                <div class="diagram-container">
+                    <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Title -->
+                        <text x="400" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#764ba2">
+                            Cross-Encoder Architecture: Joint Encoding
+                        </text>
+                        
+                        <!-- Input Concatenation -->
+                        <g id="inputs">
+                            <!-- Query -->
+                            <rect x="50" y="100" width="120" height="40" fill="#667eea" rx="5"/>
+                            <text x="110" y="125" text-anchor="middle" fill="white" font-size="14">Query</text>
+                            <text x="110" y="155" text-anchor="middle" font-size="12" fill="#666">
+                                "What is RAG?"
+                            </text>
+                            
+                            <!-- Document -->
+                            <rect x="50" y="160" width="120" height="40" fill="#764ba2" rx="5"/>
+                            <text x="110" y="185" text-anchor="middle" fill="white" font-size="14">Document</text>
+                            <text x="110" y="215" text-anchor="middle" font-size="12" fill="#666">
+                                "RAG combines..."
+                            </text>
+                            
+                            <!-- Concatenation -->
+                            <path d="M 170 120 L 230 150" stroke="#667eea" stroke-width="2" 
+                                  marker-end="url(#arrowhead2)"/>
+                            <path d="M 170 180 L 230 150" stroke="#764ba2" stroke-width="2" 
+                                  marker-end="url(#arrowhead2)"/>
+                            
+                            <rect x="230" y="130" width="140" height="40" fill="#ffeaa7" rx="5"/>
+                            <text x="300" y="155" text-anchor="middle" font-weight="bold" font-size="13">
+                                [CLS] Q [SEP] D [SEP]
+                            </text>
+                        </g>
+                        
+                        <!-- Transformer Encoder -->
+                        <g id="encoder">
+                            <!-- Arrow to Encoder -->
+                            <path d="M 370 150 L 420 150" stroke="#333" stroke-width="2" 
+                                  marker-end="url(#arrowhead2)"/>
+                            
+                            <!-- Main Encoder Block -->
+                            <rect x="420" y="80" width="200" height="140" fill="#f8f9fa" stroke="#764ba2" 
+                                  stroke-width="3" rx="10"/>
+                            <text x="520" y="105" text-anchor="middle" font-weight="bold" font-size="15">
+                                Transformer Encoder
+                            </text>
+                            
+                            <!-- Self-Attention Layers -->
+                            <rect x="440" y="120" width="160" height="25" fill="#d4edda" rx="3"/>
+                            <text x="520" y="138" text-anchor="middle" font-size="11">Cross-Attention Layer</text>
+                            
+                            <rect x="440" y="150" width="160" height="25" fill="#cfe2ff" rx="3"/>
+                            <text x="520" y="168" text-anchor="middle" font-size="11">Feed-Forward Network</text>
+                            
+                            <rect x="440" y="180" width="160" height="25" fill="#f8d7da" rx="3"/>
+                            <text x="520" y="198" text-anchor="middle" font-size="11">Classification Head</text>
+                        </g>
+                        
+                        <!-- Output Score -->
+                        <g id="output">
+                            <!-- Arrow to Score -->
+                            <path d="M 620 150 L 680 150" stroke="#764ba2" stroke-width="2" 
+                                  marker-end="url(#arrowhead2-violet)"/>
+                            
+                            <!-- Score -->
+                            <rect x="680" y="130" width="80" height="40" fill="#28a745" rx="5"/>
+                            <text x="720" y="145" text-anchor="middle" fill="white" font-size="12">
+                                Relevance
+                            </text>
+                            <text x="720" y="160" text-anchor="middle" fill="white" font-size="14" 
+                                  font-weight="bold">0.92</text>
+                        </g>
+                        
+                        <!-- Attention Visualization -->
+                        <g id="attention-viz">
+                            <text x="400" y="260" text-anchor="middle" font-size="14" font-weight="bold" 
+                                  fill="#764ba2">Cross-Attention Between Query and Document Tokens</text>
+                            
+                            <!-- Query tokens -->
+                            <text x="200" y="290" font-size="11" fill="#667eea">Query:</text>
+                            <rect x="250" y="275" width="40" height="20" fill="#667eea" opacity="0.3" rx="2"/>
+                            <text x="270" y="288" text-anchor="middle" font-size="10">What</text>
+                            <rect x="295" y="275" width="30" height="20" fill="#667eea" opacity="0.3" rx="2"/>
+                            <text x="310" y="288" text-anchor="middle" font-size="10">is</text>
+                            <rect x="330" y="275" width="40" height="20" fill="#667eea" opacity="0.3" rx="2"/>
+                            <text x="350" y="288" text-anchor="middle" font-size="10">RAG</text>
+                            
+                            <!-- Document tokens -->
+                            <text x="200" y="320" font-size="11" fill="#764ba2">Document:</text>
+                            <rect x="250" y="305" width="40" height="20" fill="#764ba2" opacity="0.3" rx="2"/>
+                            <text x="270" y="318" text-anchor="middle" font-size="10">RAG</text>
+                            <rect x="295" y="305" width="70" height="20" fill="#764ba2" opacity="0.3" rx="2"/>
+                            <text x="330" y="318" text-anchor="middle" font-size="10">combines</text>
+                            <rect x="370" y="305" width="60" height="20" fill="#764ba2" opacity="0.3" rx="2"/>
+                            <text x="400" y="318" text-anchor="middle" font-size="10">retrieval</text>
+                            
+                            <!-- Attention lines -->
+                            <line x1="350" y1="295" x2="270" y2="305" stroke="#ffa500" stroke-width="3" 
+                                  opacity="0.6"/>
+                            <line x1="350" y1="295" x2="330" y2="305" stroke="#ffa500" stroke-width="2" 
+                                  opacity="0.4"/>
+                            <line x1="350" y1="295" x2="400" y2="305" stroke="#ffa500" stroke-width="2" 
+                                  opacity="0.4"/>
+                            
+                            <text x="500" y="310" font-size="10" fill="#666">
+                                (Attention weights visualized)
+                            </text>
+                        </g>
+                        
+                        <!-- Key Features Box -->
+                        <g id="features">
+                            <rect x="50" y="350" width="700" height="130" fill="#f8f9fa" stroke="#764ba2" 
+                                  stroke-width="1" rx="10" stroke-dasharray="5,5"/>
+                            <text x="400" y="375" text-anchor="middle" font-size="16" font-weight="bold" 
+                                  fill="#764ba2">Key Characteristics</text>
+                            
+                            <text x="70" y="405" font-size="13" fill="#333">
+                                ✓ Joint encoding captures fine-grained interactions between query and document
+                            </text>
+                            <text x="70" y="430" font-size="13" fill="#333">
+                                ✓ Cross-attention mechanisms enable deep semantic understanding
+                            </text>
+                            <text x="70" y="455" font-size="13" fill="#333">
+                                ✓ Cannot pre-compute representations - must process pairs at inference time
+                            </text>
+                        </g>
+                        
+                        <!-- Arrow markers -->
+                        <defs>
+                            <marker id="arrowhead2" markerWidth="10" markerHeight="10" 
+                                    refX="9" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#333"/>
+                            </marker>
+                            <marker id="arrowhead2-violet" markerWidth="10" markerHeight="10" 
+                                    refX="9" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#764ba2"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <h3>How Cross-Encoders Work</h3>
+                <p>Cross-encoders process query-document pairs jointly through a single encoder network, enabling deep interaction between all tokens:</p>
+                
+                <ul>
+                    <li><strong>Joint Input:</strong> Query and document are concatenated with special tokens ([CLS], [SEP])</li>
+                    <li><strong>Cross-Attention:</strong> All tokens can attend to each other, capturing nuanced relationships</li>
+                    <li><strong>Classification Head:</strong> Final representation is passed through a classification layer for scoring</li>
+                    <li><strong>No Pre-computation:</strong> Each query-document pair must be processed together at inference time</li>
+                </ul>
+                
+                <div class="highlight-box">
+                    <strong>💡 Key Insight:</strong> Cross-encoders achieve superior accuracy by allowing full interaction between query and document tokens, but this comes at the cost of computational efficiency since no pre-computation is possible.
+                </div>
+                
+                <h3>Primary Use Cases for Cross-Encoders</h3>
+                
+                <div class="comparison-grid">
+                    <div class="card">
+                        <h4>🎯 Precision-Critical Ranking</h4>
+                        <ul class="use-case-list">
+                            <li>Legal document relevance assessment</li>
+                            <li>Medical literature ranking</li>
+                            <li>Academic paper matching</li>
+                            <li>Patent similarity analysis</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>🔄 Re-ranking Applications</h4>
+                        <ul class="use-case-list">
+                            <li>Second-stage ranking in search</li>
+                            <li>Top-K result refinement</li>
+                            <li>Answer extraction in QA</li>
+                            <li>Passage ranking for reading comprehension</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>📝 Semantic Similarity Tasks</h4>
+                        <ul class="use-case-list">
+                            <li>Textual entailment</li>
+                            <li>Paraphrase detection</li>
+                            <li>Claim verification</li>
+                            <li>Natural language inference</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card">
+                        <h4>🎓 Zero-shot Classification</h4>
+                        <ul class="use-case-list">
+                            <li>Intent classification without training</li>
+                            <li>Topic categorization</li>
+                            <li>Sentiment analysis</li>
+                            <li>Content moderation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comparison Section -->
+            <div class="architecture-section">
+                <h2>3. Detailed Comparison</h2>
+                
+                <h3>Performance Characteristics</h3>
+                
+                <table class="performance-table">
+                    <thead>
+                        <tr>
+                            <th>Aspect</th>
+                            <th>Bi-Encoder</th>
+                            <th>Cross-Encoder</th>
+                            <th>Winner</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Speed (Inference)</strong></td>
+                            <td>~1-5ms per query (with pre-computed embeddings)</td>
+                            <td>~50-200ms per query-document pair</td>
+                            <td>✅ Bi-Encoder</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Accuracy</strong></td>
+                            <td>Good (0.75-0.85 typical scores)</td>
+                            <td>Excellent (0.90-0.95 typical scores)</td>
+                            <td>✅ Cross-Encoder</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Scalability</strong></td>
+                            <td>Millions of documents</td>
+                            <td>Thousands of documents (practical limit)</td>
+                            <td>✅ Bi-Encoder</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Memory Usage</strong></td>
+                            <td>High (store all embeddings)</td>
+                            <td>Low (only model weights)</td>
+                            <td>✅ Cross-Encoder</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Pre-computation</strong></td>
+                            <td>Yes (document embeddings)</td>
+                            <td>No (must process pairs)</td>
+                            <td>✅ Bi-Encoder</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Training Data</strong></td>
+                            <td>Requires careful negative sampling</td>
+                            <td>Simpler training setup</td>
+                            <td>✅ Cross-Encoder</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <h3>Advantages and Disadvantages</h3>
+                
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h5>✅ Bi-Encoder Advantages</h5>
+                        <ul>
+                            <li>Lightning-fast inference with cached embeddings</li>
+                            <li>Scales to millions/billions of documents</li>
+                            <li>Enables real-time search applications</li>
+                            <li>Works with approximate nearest neighbor algorithms</li>
+                            <li>Can use different models for queries and documents</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="cons">
+                        <h5>❌ Bi-Encoder Disadvantages</h5>
+                        <ul>
+                            <li>Lower accuracy than cross-encoders</li>
+                            <li>Cannot capture fine-grained token interactions</li>
+                            <li>Requires large storage for embeddings</li>
+                            <li>Fixed representation may miss nuances</li>
+                            <li>Training requires careful negative sampling</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="pros-cons">
+                    <div class="pros">
+                        <h5>✅ Cross-Encoder Advantages</h5>
+                        <ul>
+                            <li>Superior accuracy and relevance scoring</li>
+                            <li>Captures nuanced semantic relationships</li>
+                            <li>Excellent for precision-critical tasks</li>
+                            <li>Simpler training setup</li>
+                            <li>Lower memory footprint (no stored embeddings)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="cons">
+                        <h5>❌ Cross-Encoder Disadvantages</h5>
+                        <ul>
+                            <li>Computationally expensive at inference</li>
+                            <li>Cannot scale to large document collections</li>
+                            <li>No pre-computation possible</li>
+                            <li>Not suitable for real-time applications at scale</li>
+                            <li>Must process every query-document pair</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hybrid Approach Section -->
+            <div class="architecture-section">
+                <h2>4. Hybrid Approach: Best of Both Worlds</h2>
+                
+                <div class="diagram-container">
+                    <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Title -->
+                        <text x="400" y="30" text-anchor="middle" font-size="20" font-weight="bold" fill="#28a745">
+                            Two-Stage Hybrid Pipeline
+                        </text>
+                        
+                        <!-- Stage 1: Bi-Encoder -->
+                        <g id="stage1">
+                            <rect x="50" y="70" width="300" height="120" fill="#e7f3ff" stroke="#667eea" 
+                                  stroke-width="2" rx="10"/>
+                            <text x="200" y="95" text-anchor="middle" font-size="16" font-weight="bold" 
+                                  fill="#667eea">Stage 1: Bi-Encoder Retrieval</text>
+                            
+                            <rect x="70" y="110" width="100" height="30" fill="#667eea" rx="5"/>
+                            <text x="120" y="130" text-anchor="middle" fill="white" font-size="12">Query</text>
+                            
+                            <path d="M 170 125 L 200 125" stroke="#667eea" stroke-width="2" 
+                                  marker-end="url(#arrowhead3)"/>
+                            
+                            <rect x="200" y="110" width="130" height="30" fill="white" stroke="#667eea" rx="5"/>
+                            <text x="265" y="130" text-anchor="middle" font-size="12">Vector Search</text>
+                            
+                            <text x="200" y="165" text-anchor="middle" font-size="11" fill="#666">
+                                Retrieve Top-100 candidates
+                            </text>
+                            <text x="200" y="180" text-anchor="middle" font-size="11" fill="#666">
+                                from 1M+ documents
+                            </text>
+                        </g>
+                        
+                        <!-- Arrow between stages -->
+                        <path d="M 350 130 L 400 130" stroke="#28a745" stroke-width="3" 
+                              marker-end="url(#arrowhead3-green)"/>
+                        <text x="375" y="120" text-anchor="middle" font-size="10" fill="#28a745">100 docs</text>
+                        
+                        <!-- Stage 2: Cross-Encoder -->
+                        <g id="stage2">
+                            <rect x="400" y="70" width="300" height="120" fill="#f3e7ff" stroke="#764ba2" 
+                                  stroke-width="2" rx="10"/>
+                            <text x="550" y="95" text-anchor="middle" font-size="16" font-weight="bold" 
+                                  fill="#764ba2">Stage 2: Cross-Encoder Reranking</text>
+                            
+                            <rect x="420" y="110" width="130" height="30" fill="white" stroke="#764ba2" rx="5"/>
+                            <text x="485" y="130" text-anchor="middle" font-size="12">Score All Pairs</text>
+                            
+                            <path d="M 550 125 L 580 125" stroke="#764ba2" stroke-width="2" 
+                                  marker-end="url(#arrowhead3)"/>
+                            
+                            <rect x="580" y="110" width="100" height="30" fill="#764ba2" rx="5"/>
+                            <text x="630" y="130" text-anchor="middle" fill="white" font-size="12">Top-10</text>
+                            
+                            <text x="550" y="165" text-anchor="middle" font-size="11" fill="#666">
+                                Precise ranking of
+                            </text>
+                            <text x="550" y="180" text-anchor="middle" font-size="11" fill="#666">
+                                100 candidates
+                            </text>
+                        </g>
+                        
+                        <!-- Performance metrics -->
+                        <g id="metrics">
+                            <rect x="150" y="230" width="500" height="140" fill="#f8f9fa" stroke="#28a745" 
+                                  stroke-width="2" rx="10"/>
+                            <text x="400" y="255" text-anchor="middle" font-size="16" font-weight="bold" 
+                                  fill="#28a745">Hybrid Pipeline Performance</text>
+                            
+                            <text x="180" y="285" font-size="13" fill="#333">
+                                ⚡ Total Latency: ~50ms (5ms retrieval + 45ms reranking)
+                            </text>
+                            <text x="180" y="310" font-size="13" fill="#333">
+                                🎯 Accuracy: 0.92 nDCG@10 (vs 0.75 bi-encoder only)
+                            </text>
+                            <text x="180" y="335" font-size="13" fill="#333">
+                                📊 Scalability: Handles millions of documents effectively
+                            </text>
+                            <text x="180" y="360" font-size="13" fill="#333">
+                                💰 Cost: 10x cheaper than full cross-encoder search
+                            </text>
+                        </g>
+                        
+                        <!-- Arrow markers -->
+                        <defs>
+                            <marker id="arrowhead3" markerWidth="10" markerHeight="10" 
+                                    refX="9" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#333"/>
+                            </marker>
+                            <marker id="arrowhead3-green" markerWidth="10" markerHeight="10" 
+                                    refX="9" refY="5" orient="auto">
+                                <polygon points="0 0, 10 5, 0 10" fill="#28a745"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                
+                <h3>When to Use Hybrid Approach</h3>
+                
+                <ul>
+                    <li><strong>E-commerce Search:</strong> Fast initial retrieval + accurate ranking of top products</li>
+                    <li><strong>Question Answering:</strong> Retrieve relevant passages + precise answer extraction</li>
+                    <li><strong>Enterprise Search:</strong> Scale to large document corpus + high-precision results</li>
+                    <li><strong>Legal/Medical IR:</strong> Comprehensive retrieval + accuracy for critical decisions</li>
+                </ul>
+                
+                <div class="code-example">
+                    <pre># Hybrid Pipeline Example (Python)
+                    
+# Stage 1: Bi-Encoder Retrieval
+query_embedding = bi_encoder.encode(query)
+candidates = vector_db.search(
+    query_embedding, 
+    top_k=100  # Retrieve more candidates
+)
+
+# Stage 2: Cross-Encoder Reranking
+pairs = [[query, doc] for doc in candidates]
+scores = cross_encoder.predict(pairs)
+
+# Sort and return top results
+top_results = sorted(
+    zip(candidates, scores), 
+    key=lambda x: x[1], 
+    reverse=True
+)[:10]  # Return top 10</pre>
+                </div>
+            </div>
+            
+            <!-- Decision Framework -->
+            <div class="architecture-section">
+                <h2>5. Decision Framework</h2>
+                
+                <div class="highlight-box">
+                    <h3>Quick Decision Guide</h3>
+                    
+                    <p><strong>Choose Bi-Encoder when:</strong></p>
+                    <ul>
+                        <li>You have millions of documents to search</li>
+                        <li>Real-time latency is critical (&lt;10ms)</li>
+                        <li>You need to pre-compute and cache representations</li>
+                        <li>Approximate results are acceptable</li>
+                        <li>You're building the first stage of a pipeline</li>
+                    </ul>
+                    
+                    <p><strong>Choose Cross-Encoder when:</strong></p>
+                    <ul>
+                        <li>Accuracy is more important than speed</li>
+                        <li>You have a small set of candidates (&lt;1000)</li>
+                        <li>You need fine-grained semantic understanding</li>
+                        <li>You're doing re-ranking or classification</li>
+                        <li>Zero-shot performance is required</li>
+                    </ul>
+                    
+                    <p><strong>Choose Hybrid when:</strong></p>
+                    <ul>
+                        <li>You need both scale and accuracy</li>
+                        <li>You can afford 50-100ms latency</li>
+                        <li>You're building production search systems</li>
+                        <li>Cost-efficiency is important</li>
+                    </ul>
+                </div>
+                
+                <h3>Industry Applications</h3>
+                
+                <table class="performance-table">
+                    <thead>
+                        <tr>
+                            <th>Industry</th>
+                            <th>Use Case</th>
+                            <th>Recommended Approach</th>
+                            <th>Reasoning</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>E-commerce</strong></td>
+                            <td>Product Search</td>
+                            <td>Hybrid</td>
+                            <td>Scale for catalog + relevance for conversion</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Legal</strong></td>
+                            <td>Case Law Research</td>
+                            <td>Cross-Encoder</td>
+                            <td>Precision critical for legal decisions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Healthcare</strong></td>
+                            <td>Medical Literature</td>
+                            <td>Hybrid</td>
+                            <td>Large corpus + accuracy requirements</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Support</strong></td>
+                            <td>FAQ Matching</td>
+                            <td>Bi-Encoder</td>
+                            <td>Speed and scale with good-enough accuracy</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Media</strong></td>
+                            <td>Content Recommendation</td>
+                            <td>Bi-Encoder</td>
+                            <td>Real-time + millions of items</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Finance</strong></td>
+                            <td>Document Compliance</td>
+                            <td>Cross-Encoder</td>
+                            <td>Regulatory accuracy requirements</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Conclusion -->
+            <div class="architecture-section">
+                <h2>Conclusion</h2>
+                
+                <p>The choice between bi-encoders and cross-encoders represents a fundamental trade-off in information retrieval:</p>
+                
+                <ul>
+                    <li><strong>Bi-encoders</strong> excel at scale and speed through independent encoding and pre-computation</li>
+                    <li><strong>Cross-encoders</strong> achieve superior accuracy through joint encoding and cross-attention</li>
+                    <li><strong>Hybrid approaches</strong> combine both to achieve practical balance for production systems</li>
+                </ul>
+                
+                <div class="highlight-box">
+                    <strong>🚀 Key Takeaway:</strong> Modern production systems often use bi-encoders for retrieval and cross-encoders for reranking, achieving both scale and accuracy. The future likely involves learned routing between approaches based on query complexity and available computational resources.
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
