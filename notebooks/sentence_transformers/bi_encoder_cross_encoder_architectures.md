@@ -123,29 +123,6 @@ gap is enormous for production-scale corpora.
 
 ![Schematic of the two-tower flow](images/two_tower_flow.png)
 
-```mermaid
-flowchart LR
-    Q["Query<br/><i>What is RAG?</i>"]
-    D["Document<br/><i>RAG combines...</i>"]
-    EQ["Query Encoder φ_q"]
-    ED["Doc Encoder φ_d"]
-    VQ["Query embedding<br/>q ∈ ℝ^d"]
-    VD["Doc embedding<br/>d ∈ ℝ^d"]
-    SIM["cos(q, d)"]
-    OUT(["Score 0.89"])
-
-    Q --> EQ --> VQ --> SIM
-    D --> ED --> VD --> SIM
-    SIM --> OUT
-
-    classDef qStyle fill:#667eea,color:#fff,stroke:#4f5fc4
-    classDef dStyle fill:#764ba2,color:#fff,stroke:#5e3b82
-    classDef opStyle fill:#ffeaa7,stroke:#f39c12
-    class Q,EQ,VQ qStyle
-    class D,ED,VD dStyle
-    class SIM,OUT opStyle
-```
-
 ### 1.4 Training: contrastive objectives
 
 Bi-encoders are trained to *pull together* relevant pairs and *push apart*
@@ -231,30 +208,6 @@ construction, cannot represent in its fixed-length pooled vector.
 
 ![Schematic of the joint-encoding flow](images/joint_encoding_flow.png)
 
-```mermaid
-flowchart LR
-    Q["Query<br/><i>What is RAG?</i>"]
-    D["Document<br/><i>RAG combines...</i>"]
-    CAT["[CLS] q [SEP] d [SEP]"]
-    TRF["Transformer<br/>(full cross-attention)"]
-    CLS["h_CLS ∈ ℝ^d"]
-    HEAD["Classification head<br/>w · h_CLS + b"]
-    OUT(["Score 0.92"])
-
-    Q --> CAT
-    D --> CAT
-    CAT --> TRF --> CLS --> HEAD --> OUT
-
-    classDef qStyle fill:#667eea,color:#fff,stroke:#4f5fc4
-    classDef dStyle fill:#764ba2,color:#fff,stroke:#5e3b82
-    classDef opStyle fill:#ffeaa7,stroke:#f39c12
-    classDef outStyle fill:#28a745,color:#fff,stroke:#1c6f30
-    class Q qStyle
-    class D dStyle
-    class CAT,TRF,CLS,HEAD opStyle
-    class OUT outStyle
-```
-
 ### 2.4 Why it's slow
 
 Because the score depends on *both* $q$ and $d$ being processed together,
@@ -298,8 +251,6 @@ easy for the cross-attention layers to discriminate.
 > richness. The full cross-attention pattern lets them model interactions
 > that a bi-encoder's fixed-length pooled vector cannot — at the price of
 > non-cacheability.
-
-![Cross-encoder architecture with key characteristics](images/cross_encoder_characteristics.png)
 
 ### 2.7 The Cross-Attention Mechanism: A Full Mathematical Treatment
 
