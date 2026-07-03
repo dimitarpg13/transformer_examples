@@ -141,6 +141,80 @@ $$
 where $\tau > 0$ is the temperature and other documents in the batch serve as
 in-batch negatives.
 
+**Dissecting the formula.**
+
+- $s_{\mathrm{bi}}(q, d) = \cos(\phi_q(q), \phi_d(d))$ — cosine similarity
+  between query and document embeddings. After $\ell_2$-normalisation this is
+  a dot product, so every value lives in $[-1, 1]$.
+- $d^{+}$ — the one document in the batch that is the *gold* relevant match
+  for query $q$. Every other $d \in \mathcal{B} \setminus \{d^{+}\}$ is an
+  *in-batch negative*.
+- The fraction is a **softmax probability**: "given $q$, what fraction of the
+  total exponentiated similarity mass lands on $d^{+}$?" The denominator sums
+  over every document in the batch, including $d^{+}$ itself.
+- The $-\log$ converts that probability into a cross-entropy loss. When all
+  mass is on $d^{+}$, the loss is $0$; when mass leaks to negatives, the loss
+  grows.
+
+**The in-batch negative trick.**
+
+A minibatch of size $B$ contains $B$ query-positive pairs. For each query $q_i$,
+the other $B - 1$ positives automatically serve as negatives — no extra sampling
+is needed. The loss effectively constructs a $B \times B$ similarity matrix
+
+$$
+S_{ij} = s_{\mathrm{bi}}(q_i, d_j) / \tau
+$$
+
+and trains the model so the diagonal (each query matched with its own positive)
+dominates every row. Each row is a $B$-way classification problem, so the full
+batch yields $B \times (B - 1)$ negative training signals from just $B$
+annotated pairs. With $B = 256$ each query sees 255 negatives; with $B = 1024$
+(common in distributed training) it sees 1023.
+
+**Temperature as an implicit margin.**
+
+$\tau$ controls the sharpness of the probability distribution over candidates:
+
+- **Small $\tau$** (e.g., 0.05) makes the distribution peaky. The model is
+  harshly penalised for not concentrating mass on $d^{+}$, amplifying small
+  score differences and forcing wider separation between positives and hard
+  negatives.
+- **Large $\tau$** (e.g., 1.0) flattens the distribution, making the model
+  more forgiving of imperfect rankings — useful early in training when
+  embeddings are still random and all similarities cluster near zero.
+
+The gradient with respect to a negative similarity $s^{-}$ scales as
+
+$$
+\frac{\partial \mathcal{L}}{\partial s^{-}} \propto \frac{\exp(s^{-}/\tau)}{\sum_{d} \exp(s_d/\tau)}
+$$
+
+At low $\tau$, even a moderate negative similarity creates a large softmax
+weight and thus a large gradient — the model is forced to push $s^{-}$ much
+further below $s^{+}$. This is why $\tau$ is sometimes called a *learnable
+margin*: it controls separation aggressiveness without needing an explicit
+margin hyperparameter.
+
+In `sentence-transformers`, `MultipleNegativesRankingLoss` exposes this as a
+`scale` parameter where $\text{scale} = 1/\tau$ (default 20.0, i.e.,
+$\tau = 0.05$).
+
+**Connection to mutual information.**
+
+The name "InfoNCE" comes from the Noise-Contrastive Estimation paper
+(van den Oord et al., 2018). Minimising InfoNCE maximises a lower bound on the
+mutual information between queries and their relevant documents:
+
+$$
+I(Q; D^{+}) \ge \log |\mathcal{B}| - \mathcal{L}_{\mathrm{InfoNCE}}
+$$
+
+As the loss decreases, the model provably learns embeddings that capture more
+of the statistical dependency between queries and their relevant documents. The
+bound tightens with larger $|\mathcal{B}|$, which is one theoretical reason why
+bigger batches help.
+
 **Triplet / margin loss** — with an explicit hard negative $d^-$:
 
 $$
@@ -152,6 +226,78 @@ $$
 with margin $m > 0$. Bi-encoders are *negative-sample sensitive*: random
 negatives saturate quickly, so mining of hard negatives (BM25 top-K minus the
 gold doc, or a previous-generation retriever) is usually required.
+
+**InfoNCE vs. Triplet loss — head-to-head comparison.**
+
+| Property | InfoNCE / contrastive softmax | Triplet loss |
+|---|---|---|
+| Negatives per step | $B - 1$ (entire batch) | 1 per triplet |
+| Explicit margin? | No — implicit via $\tau$ | Yes — hyperparameter $m$ |
+| Hard-negative sensitivity | Moderate — all negatives contribute | High — saturates without hard mining |
+| Gradient efficiency | High — every pair in batch contributes | Low — only the hardest triplet matters |
+| Training stability | More stable (smooth log-softmax) | Can oscillate (non-smooth hinge) |
+| Batch size dependency | Needs large batches ($\ge 128$) | Works with small batches |
+| Theoretical grounding | Lower bound on mutual information | Geometric margin in embedding space |
+
+**Both losses pull *and* push simultaneously.**
+
+A common question is whether one loss handles pulling (bringing relevant pairs
+closer) while the other handles pushing (separating irrelevant ones). In fact,
+**both losses do both in every gradient step** — the introductory sentence
+describes the overall goal of contrastive training, and each loss implements
+both directions, just with different mechanics.
+
+*InfoNCE — how one formula does both.*
+
+Rewrite the loss for a single query $q$ with positive similarity $s^{+}$ and
+negative similarities $s^{-}$:
+
+$$
+\mathcal{L} = -s^{+}/\tau + \log\left(\exp(s^{+}/\tau) + \sum_{d^{-}} \exp(s^{-}/\tau)\right)
+$$
+
+The first term ($-s^{+}/\tau$) **pulls**: minimising the loss requires making
+$s^{+}$ as large as possible. The second term (the log-sum-exp) **pushes**: it
+penalises any large $s^{-}$, because a large negative similarity inflates the
+denominator and thus the loss. The two forces are coupled through the softmax
+normalisation — the loss drops only when $s^{+}$ is *relatively* larger than
+all $s^{-}$ values, so both directions must improve together.
+
+*Triplet loss — same dual action.*
+
+$$
+\mathcal{L}_{\mathrm{triplet}} = \max(0, m + s^{-} - s^{+})
+$$
+
+The interior has $-s^{+}$ (**pulls** — increasing $s^{+}$ reduces the loss)
+and $+s^{-}$ (**pushes** — decreasing $s^{-}$ reduces the loss). The margin
+$m$ sets the minimum required gap.
+
+*What actually differs is gradient distribution, not direction.*
+
+| Aspect | InfoNCE | Triplet |
+|---|---|---|
+| Pull on $d^{+}$ | Relative to all $B - 1$ negatives (softmax competition) | Relative to one $d^{-}$ at a time |
+| Push on negatives | All $B - 1$ negatives pushed, weighted by softmax share | Only the single $d^{-}$ in the triplet pushed |
+| Gradient allocation | Hardest negatives auto-receive the largest gradient | Equal push regardless of difficulty |
+
+InfoNCE is more efficient because it applies both forces across all negatives
+simultaneously and auto-allocates gradient to the hardest ones. Triplet loss
+applies both forces to just one negative per step, which is why it needs
+external hard-negative mining to keep up.
+
+**Practical notes for fine-tuning.**
+
+- Adding *hard negatives* alongside in-batch negatives significantly helps:
+  each training example becomes
+  `(query, positive, hard_neg_1, hard_neg_2, ...)`. The hard negatives join
+  the denominator, so the model must distinguish the gold doc from both easy
+  and hard distractors.
+- For asymmetric retrieval (query-to-passage, as in RAG), use different pooling
+  or projection heads for $\phi_q$ and $\phi_d$ while sharing the transformer
+  backbone. InfoNCE handles this asymmetry naturally.
+- Gradient accumulation can simulate larger effective batch sizes if GPU memory
+  is limited, giving more in-batch negatives per step.
 
 ### 1.5 Primary use cases
 
