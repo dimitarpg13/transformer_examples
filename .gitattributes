@@ -21,3 +21,5 @@ notebooks/sentence_transformers/images/cross_encoder_architecture.png filter=lfs
 notebooks/sentence_transformers/images/cross_encoder_characteristics.png filter=lfs diff=lfs merge=lfs -text
 notebooks/sentence_transformers/images/hybrid_pipeline.png filter=lfs diff=lfs merge=lfs -text
 notebooks/sentence_transformers/images/joint_encoding_flow.png filter=lfs diff=lfs merge=lfs -text
+docs/assets/tied_vs_untied_embedding_spikes.png filter=lfs diff=lfs merge=lfs -text
+docs/assets/transformer_spike_propagation_pathway.png filter=lfs diff=lfs merge=lfs -text
