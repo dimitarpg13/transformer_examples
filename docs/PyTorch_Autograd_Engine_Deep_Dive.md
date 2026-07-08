@@ -67,6 +67,17 @@
 - [17. Distributed autograd (brief)](#17-distributed-autograd-brief)
 - [18. torch.compile and the future of autograd](#18-torchcompile-and-the-future-of-autograd)
 - [19. Summary](#19-summary)
+- [Appendix A — Anatomy of `self.W_Q(H)` execution](#appendix-a--anatomy-of-selfw_qh-execution)
+  - [A.1 What `self.W_Q` actually is — three tensors, two of them Parameters](#a1-what-selfw_q-actually-is--three-tensors-two-of-them-parameters)
+  - [A.2 The forward dispatch chain](#a2-the-forward-dispatch-chain)
+  - [A.3 What autograd metadata gets attached to `Q`](#a3-what-autograd-metadata-gets-attached-to-q)
+  - [A.4 The backward pass — VJP math for the linear layer](#a4-the-backward-pass--vjp-math-for-the-linear-layer)
+  - [A.5 Pseudocode of `MmBackward0` and `AccumulateGrad`](#a5-pseudocode-of-mmbackward0-and-accumulategrad)
+  - [A.6 The full backward walk — end-to-end sequence](#a6-the-full-backward-walk--end-to-end-sequence)
+  - [A.7 End-to-end verification](#a7-end-to-end-verification)
+  - [A.8 Interaction with `optimizer.step()`](#a8-interaction-with-optimizerstep)
+  - [A.9 What this line contributes to memory, compute, and the graph](#a9-what-this-line-contributes-to-memory-compute-and-the-graph)
+  - [A.10 Cross-reference summary](#a10-cross-reference-summary)
 - [20. References](#20-references)
 
 ---
@@ -1193,6 +1204,348 @@ For a transformer, this machinery is what makes it possible to route gradient in
 The details in §11–18 exist to make this fundamental picture tractable at scale: activation checkpointing, mixed precision, gradient accumulation, distributed backward, and ahead-of-time compilation all preserve the reverse-mode semantics while relaxing the memory and throughput constraints that would otherwise limit model size and training speed.
 
 Understanding autograd well means being able to answer, for any line of PyTorch code: *what does this line contribute to the graph, what will be saved for backward, and what VJP will run when the loss propagates through here?* The rest is bookkeeping.
+
+---
+
+## Appendix A — Anatomy of `self.W_Q(H)` execution
+
+Sections 3–5 developed the general mechanics of the autograd graph (tensor metadata, forward-time graph construction, backward-time VJP traversal); §6 worked out the VJP for a linear layer in the abstract. This appendix drills into a single, concrete line of PyTorch — the one you have already seen throughout §5 and §8 of [Multi-Head Attention in a Transformer Block](./Multi-Head_Attention_in_Transformer_Block.md):
+
+```python
+Q = self.W_Q(H)
+```
+
+where `self.W_Q = nn.Linear(d, d, bias=False)` and `H` has shape $(B, T, d)$. The goal is to show exactly what runs on the CPU/GPU on that line, what metadata autograd attaches to the returned tensor, what happens in the C++ engine when `loss.backward()` fires later, and how `self.W_Q.weight.grad` ends up populated in time for `optimizer.step()`. Every claim in the earlier sections shows up somewhere in this walkthrough.
+
+### A.1 What `self.W_Q` actually is — three tensors, two of them Parameters
+
+The `nn.Linear` module you instantiated is an object with a small amount of state. That state consists of exactly two learnable tensors (one, in the `bias=False` case) plus a handful of Python metadata:
+
+```python
+self.W_Q.in_features   # int, 32 (or whatever d is)
+self.W_Q.out_features  # int, 32
+self.W_Q.weight        # torch.nn.Parameter, shape (out_features, in_features) = (d, d)
+self.W_Q.bias          # None (because bias=False); otherwise torch.nn.Parameter shape (d,)
+```
+
+**`nn.Parameter` is a `Tensor` subclass** whose constructor sets `requires_grad=True` and whose sole purpose is to signal "this tensor is a learnable parameter that must be registered with the parent `nn.Module`." Concretely, when `nn.Linear.__init__` executes:
+
+```python
+class Linear(nn.Module):
+    def __init__(self, in_features, out_features, bias=True):
+        super().__init__()
+        self.in_features  = in_features
+        self.out_features = out_features
+        self.weight = nn.Parameter(torch.empty(out_features, in_features))
+        if bias:
+            self.bias = nn.Parameter(torch.empty(out_features))
+        else:
+            self.register_parameter('bias', None)
+        self.reset_parameters()   # Kaiming-uniform init
+```
+
+three things happen when the `self.weight = nn.Parameter(...)` assignment runs:
+
+1. The `Parameter` is a leaf tensor with `requires_grad=True` — from §3.1's perspective it is exactly the leaf whose `.grad` will accumulate on backward.
+2. `nn.Module`'s custom `__setattr__` intercepts the assignment and registers the parameter in `self._parameters` under the name `'weight'`. This is what makes `model.parameters()` iterate over it and what makes `state_dict()` know its canonical name.
+3. Any downstream operation that consumes this tensor will produce a tracked (non-leaf) output whose `grad_fn` back-pointer references the operation node — the mechanism from §3.2.
+
+The **shape convention** is one PyTorch idiom worth calling out because it changes every VJP derivation you write against the source: PyTorch stores the linear layer's weight as $\mathbb{R}^{d_{\mathrm{out}} \times d_{\mathrm{in}}}$, which is the *transpose* of the matrix $W_Q \in \mathbb{R}^{d_{\mathrm{in}} \times d_{\mathrm{out}}}$ in the standard paper notation. Under this convention `F.linear(input, weight)` computes `input @ weight.T`, and the result equals `input @ W_Q` in paper notation. The transpose is baked into the storage.
+
+### A.2 The forward dispatch chain
+
+Calling an `nn.Module` instance is the Python `__call__` protocol. The full chain from Python down to the GEMM kernel is:
+
+```mermaid
+flowchart LR
+    A["self.W_Q(H)"] --> B["nn.Module.__call__(self, H)"]
+    B --> C["_call_impl runs<br>_forward_pre_hooks"]
+    C --> D["nn.Linear.forward(self, H)"]
+    D --> E["F.linear(H, self.weight, self.bias)"]
+    E --> F["ATen op aten::linear"]
+    F --> G["cuBLAS GEMM<br>or MKL / OneDNN / MPS"]
+    G --> H["Output tensor Q<br>with grad_fn = MmBackward0"]
+    C -.-> I["_forward_hooks and<br>_backward_hooks<br>register around forward"]
+```
+
+Step by step:
+
+1. **`nn.Module.__call__`** — This is where forward and backward *hooks* fire. It is why library authors monkey-patch `nn.Linear` (e.g., `peft` for LoRA injection, `torch.profiler` for tracing) at this level rather than at `forward`. `_call_impl` runs `_forward_pre_hooks` → `forward` → `_forward_hooks` → `_backward_hooks` in that order.
+2. **`nn.Linear.forward`** — a one-liner in current PyTorch:
+   ```python
+   def forward(self, input):
+       return F.linear(input, self.weight, self.bias)
+   ```
+3. **`F.linear`** — the actual math primitive; dispatches to the C++ `aten::linear` operator. Schematically:
+   ```python
+   def linear(input, weight, bias=None):
+       return torch._C._nn.linear(input, weight, bias)
+   ```
+4. **`aten::linear`** — the C++ dispatch layer. In pseudocode:
+   ```cpp
+   Tensor linear(const Tensor& input,
+                 const Tensor& weight,
+                 const c10::optional<Tensor>& bias) {
+       if (bias.has_value()) {
+           return at::addmm(*bias, input, weight.transpose(-2, -1));
+       } else {
+           return at::matmul(input, weight.transpose(-2, -1));
+       }
+   }
+   ```
+5. **`at::matmul` / `at::addmm`** — these dispatch to the backend of the tensors' `Device`: `cublasSgemm` / `cublasBgemm` on CUDA, MKL `sgemm` on Intel CPU, `oneDNN` on newer CPUs, `MPSMatrixMultiplication` on Apple Silicon. All of them are highly optimized general matrix multiplication kernels.
+
+The key point: from the Python caller's perspective, `self.W_Q(H)` looks like a single method invocation, but under the hood it is a five-layer stack that terminates in a hardware-specific BLAS call.
+
+### A.3 What autograd metadata gets attached to `Q`
+
+The step from `at::matmul` to the returned tensor is where autograd inserts its bookkeeping. Because `self.W_Q.weight.requires_grad == True`, the dispatcher routes through an **autograd-wrapped** kernel that:
+
+1. Runs the primal `matmul` to compute `Q`'s data.
+2. Constructs a `MmBackward0` node (a C++ `torch::autograd::Node` subclass) with `saved_tensors = (input, weight)`.
+3. Attaches that node as `Q.grad_fn`.
+4. Populates the node's `next_functions` tuple with references to (a) `H.grad_fn` if `H` is non-leaf, or an `AccumulateGrad` node if `H` is a leaf with `requires_grad=True`, and (b) the `AccumulateGrad` node associated with `self.W_Q.weight`.
+
+Inspecting the result confirms this:
+
+```python
+Q = self.W_Q(H)
+print(Q.grad_fn)                          # <MmBackward0 object at 0x...>
+print(Q.grad_fn.next_functions)
+# ((<AccumulateGrad object>, 0), (<...upstream H's grad_fn or AccumulateGrad...>, 0))
+```
+
+Diagrammatically, the graph fragment for one call looks like this:
+
+```mermaid
+flowchart TD
+    W["self.W_Q.weight<br>Parameter, leaf<br>requires_grad=True"]
+    WACC["AccumulateGrad<br>writes into weight.grad"]
+    H["H<br>activation from upstream<br>grad_fn possibly set"]
+    MM["MmBackward0 node<br>saved: input H, weight"]
+    Q["Q = self.W_Q(H)<br>grad_fn = MmBackward0"]
+    W --> WACC
+    WACC -.->|"next_functions[1]"| MM
+    H -.->|"next_functions[0]"| MM
+    MM --> Q
+```
+
+Two properties worth internalizing:
+
+- The `AccumulateGrad` node is the **only** place `.grad` on a leaf tensor is ever written. It reads incoming cotangent from one edge and does `param.grad = (param.grad or 0) + incoming`. This is how §3.3's "gradients accumulate across backward passes" is actually implemented — accumulation happens at this single node type, not inside the ops.
+- `MmBackward0.saved_tensors` holds *both* `H` and `weight`. From §4.2: this is what "saved for backward" means concretely. If `H` has shape $(B, T, d)$ and `weight` has shape $(d, d)$, this contributes $B T d + d^2$ floats to the activation memory footprint — the number that shows up in GPU memory profilers.
+
+### A.4 The backward pass — VJP math for the linear layer
+
+When `loss.backward()` eventually fires, the engine walks in reverse topological order until it reaches the `MmBackward0` node created above. What the node computes is the linear-layer VJP from §6, specialized to PyTorch's storage convention.
+
+Let `weight` $= W \in \mathbb{R}^{d_{\mathrm{out}} \times d_{\mathrm{in}}}$ be the stored parameter and `input` $= H \in \mathbb{R}^{B \times T \times d_{\mathrm{in}}}$ the saved input. The forward relation is:
+
+$$
+Q_{b, t, :} = H_{b, t, :} \cdot W^\top, \qquad Q \in \mathbb{R}^{B \times T \times d_{\mathrm{out}}}.
+$$
+
+Suppose the incoming cotangent from downstream is $\bar Q \in \mathbb{R}^{B \times T \times d_{\mathrm{out}}}$. The two outgoing cotangents produced by the node are:
+
+$$
+\bar H_{b, t, :} = \bar Q_{b, t, :} \cdot W \in \mathbb{R}^{d_{\mathrm{in}}}
+$$
+
+$$
+\bar W = \sum_{b=1}^{B} \sum_{t=1}^{T} \bar Q_{b, t, :}^{\top} \cdot H_{b, t, :} \in \mathbb{R}^{d_{\mathrm{out}} \times d_{\mathrm{in}}}
+$$
+
+Two things to notice, both direct consequences of §5.3 (broadcast semantics) and §5.4 (multi-consumer summation):
+
+1. `weight` is used at *every* $(b, t)$ position in the batch (same parameters, different data). Its VJP sums over $b$ and $t$ — exactly the "broadcast becomes sum" rule from §5.3.
+2. `input` is used at exactly one $(b, t)$ position, so its VJP has no summation.
+
+For the `bias=True` variant, `F.linear` calls `addmm` and the node type is `AddmmBackward0`. It additionally computes:
+
+$$
+\bar b = \sum_{b, t} \bar Q_{b, t, :} \in \mathbb{R}^{d_{\mathrm{out}}}
+$$
+
+by the same broadcast-to-sum rule (the bias was broadcast across every $(b, t)$ position in forward).
+
+### A.5 Pseudocode of `MmBackward0` and `AccumulateGrad`
+
+The C++ implementation is a few hundred lines of `torch/csrc/autograd/generated/`, but the essence is what you would write from the math in A.4. Here is a faithful Python reproduction:
+
+```python
+class MmBackward0Node:
+    """Pseudocode for the node autograd installs when F.linear runs."""
+
+    def __init__(self, input_tensor, weight_tensor,
+                 input_next_fn, weight_next_fn):
+        # Save what backward will need
+        self.saved_input  = input_tensor
+        self.saved_weight = weight_tensor
+
+        # Edges to upstream nodes in the graph
+        # Each edge is (Node, output_slot). Slot is 0 because both
+        # H and weight are single-tensor outputs of their producers.
+        self.next_functions = [
+            (input_next_fn,  0),   # -> H.grad_fn OR AccumulateGrad for H
+            (weight_next_fn, 0),   # -> AccumulateGrad for self.W_Q.weight
+        ]
+
+    def apply(self, grad_output):
+        """
+        grad_output has shape (B, T, d_out)   -- the cotangent Q_bar
+        saved_input  has shape (B, T, d_in)   -- the H used in forward
+        saved_weight has shape (d_out, d_in)  -- the weight used in forward
+
+        Returns (grad_input, grad_weight), one per next_function.
+        """
+        # Cotangent into H : (B, T, d_out) @ (d_out, d_in) -> (B, T, d_in)
+        grad_input  = grad_output @ self.saved_weight
+
+        # Cotangent into weight: flatten batch and time, then outer product
+        gout_flat   = grad_output.reshape(-1, grad_output.shape[-1])
+        input_flat  = self.saved_input.reshape(-1, self.saved_input.shape[-1])
+        grad_weight = gout_flat.transpose(0, 1) @ input_flat   # (d_out, d_in)
+
+        return grad_input, grad_weight
+
+
+class AccumulateGradNode:
+    """Pseudocode for the terminal node that writes into .grad."""
+
+    def __init__(self, leaf_param):
+        self.leaf = leaf_param            # e.g. self.W_Q.weight
+        self.next_functions = []          # terminal: no upstream edges
+
+    def apply(self, grad_incoming):
+        # Detach so the grad itself is not part of any live graph
+        contribution = grad_incoming.detach()
+        if self.leaf.grad is None:
+            self.leaf.grad = contribution.clone()
+        else:
+            # Multiple usages of the same parameter add up here.
+            self.leaf.grad = self.leaf.grad + contribution
+```
+
+Two implementation notes:
+
+- `AccumulateGrad`'s `+=` is where the "gradients accumulate across `.backward()` calls" behavior comes from. Calling `optimizer.zero_grad()` (§10.2) sets `self.leaf.grad` back to `None`, so the next backward starts a fresh accumulation.
+- `MmBackward0.apply` returns *two* tensors because `MmBackward0` has *two* `next_functions` edges. The engine feeds each returned tensor into the corresponding edge. If either edge is `None` (e.g., `H.requires_grad == False`), the engine simply discards that contribution — this is the "return `None` for inputs that don't require gradient" convention from §13.
+
+### A.6 The full backward walk — end-to-end sequence
+
+Combining the pseudocode with the engine's topological walk from §5.1, the timeline when `loss.backward()` fires looks like this:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant User
+    participant Eng as Autograd engine
+    participant Down as Downstream nodes
+    participant MM as MmBackward0
+    participant AccW as AccumulateGrad (weight)
+    participant AccH as AccumulateGrad or upstream for H
+    participant Weight as self.W_Q.weight
+    User->>Eng: loss.backward()
+    Eng->>Eng: seed grad_output for loss = 1.0
+    Eng->>Down: reverse-topological walk<br>through downstream nodes
+    Down->>MM: apply(grad_output = Q_bar)
+    MM->>MM: read saved_input H<br>and saved_weight
+    MM->>MM: compute grad_input = Q_bar @ W<br>and grad_weight = Q_bar^T @ H
+    MM->>AccH: push grad_input via next_functions[0]
+    MM->>AccW: push grad_weight via next_functions[1]
+    AccW->>Weight: weight.grad plus equals grad_weight
+    Eng->>Eng: continue walk to remaining leaves
+    Eng-->>User: backward returns
+```
+
+After this returns, `self.W_Q.weight.grad` holds $\partial \mathcal{L} / \partial W$ — a tensor of the same shape as `self.W_Q.weight` — ready to be consumed by the optimizer.
+
+### A.7 End-to-end verification
+
+The claims above are verifiable in a five-line script:
+
+```python
+import torch
+import torch.nn as nn
+
+torch.manual_seed(0)
+B, T, d = 2, 5, 32
+
+W_Q = nn.Linear(d, d, bias=False)
+H   = torch.randn(B, T, d, requires_grad=True)
+
+Q    = W_Q(H)
+loss = Q.sum()          # scalar; seeds grad_output = ones_like(Q)
+loss.backward()
+
+print("Q.grad_fn:", Q.grad_fn)            # <MmBackward0 object at 0x...>
+
+Q_bar = torch.ones_like(Q)                # what backward saw internally
+
+manual_grad_H = Q_bar @ W_Q.weight        # (B, T, d)
+manual_grad_W = (
+    Q_bar.reshape(-1, d).transpose(0, 1)
+    @ H.detach().reshape(-1, d)
+)                                          # (d, d)
+
+assert torch.allclose(H.grad,          manual_grad_H)
+assert torch.allclose(W_Q.weight.grad, manual_grad_W)
+print("VJP matches hand-computed values.")
+```
+
+Running this confirms three things at once: (1) the autograd-attached `grad_fn` is indeed `MmBackward0`; (2) the VJP applied by the engine matches the formula in A.4 to floating-point precision; (3) `.grad` on the leaf ends up holding exactly what `AccumulateGrad` deposited.
+
+### A.8 Interaction with `optimizer.step()`
+
+Once `.backward()` returns, `optimizer.step()` from §10 reads `self.W_Q.weight.grad` and updates `self.W_Q.weight.data` in place. Under AdamW this is:
+
+$$
+m \leftarrow \beta_1 m + (1 - \beta_1) g, \qquad v \leftarrow \beta_2 v + (1 - \beta_2) g^2
+$$
+
+$$
+\hat m = \frac{m}{1 - \beta_1^t}, \qquad \hat v = \frac{v}{1 - \beta_2^t}
+$$
+
+$$
+W \leftarrow W - \eta \left( \frac{\hat m}{\sqrt{\hat v} + \varepsilon} + \lambda W \right)
+$$
+
+where $g = $ `self.W_Q.weight.grad`. Two things worth noting about the interaction:
+
+- The update is wrapped in a `torch.no_grad()` context (§10.3), so `W`'s version counter (§3.5) is bumped but no new autograd node is created. `self.W_Q.weight` remains a leaf.
+- The `AccumulateGrad` node created for `self.W_Q.weight` is *persistent* across training steps — the graph edges into it are recreated on each forward pass, but the node itself and the parameter's identity persist. This is why `optimizer` can be constructed once with `W_Q.parameters()` and continue to work every step.
+
+### A.9 What this line contributes to memory, compute, and the graph
+
+Consolidating the anatomy of the single call `Q = self.W_Q(H)`:
+
+| Resource | Amount for one `nn.Linear(d, d)` call on input $(B, T, d)$ |
+|---|---|
+| Forward FLOPs | $O(B T d^2)$ — one GEMM |
+| Backward FLOPs | $O(B T d^2)$ for $\bar H$ plus $O(B T d^2)$ for $\bar W$; total $O(2 B T d^2)$ |
+| Activation memory saved for backward | `input` $B T d$ floats + `weight` $d^2$ floats |
+| New autograd graph nodes | one `MmBackward0` (or `AddmmBackward0` if bias) |
+| Parameter tensors on the autograd graph | `weight` (leaf, always) + `bias` (leaf, if `bias=True`) |
+| Persistent state that lives across training steps | `weight` data, `weight.grad` (once first populated), `weight`'s `AccumulateGrad` node, and any optimizer state (Adam's $m$, $v$) |
+
+Everything else in the earlier sections — activation checkpointing, mixed precision, gradient accumulation, LoRA blast-radius arguments, DPO/PPO variants — is a *modification* of the exact machinery documented in this appendix. If you understand what `self.W_Q(H)` does end-to-end, you can construct the analogous story for any other `nn.Module` call in a modern transformer.
+
+### A.10 Cross-reference summary
+
+| Topic in this appendix | Earlier section of this document |
+|---|---|
+| Parameter tensor, `requires_grad`, leaf status | [§3.1](#31-the-requires_grad-flag), [§3.3](#33-the-grad-accumulator), [§3.4](#34-leaf-tensors-vs-non-leaf-tensors) |
+| `grad_fn` back-pointer set on the output | [§3.2](#32-the-grad_fn-back-pointer) |
+| Saved-for-backward tensors on `MmBackward0` | [§4.2](#42-saved-for-backward-context) |
+| Broadcast becomes sum in the weight gradient | [§5.3](#53-broadcast-semantics-in-backward) |
+| VJP formula for the linear layer | [§6](#6-worked-example--gradient-through-a-linear-layer) |
+| Reverse-topological engine walk | [§5.1](#51-topological-order-and-the-engines-walk) |
+| `AccumulateGrad` and `.grad` accumulation | [§10.1](#101-the-grad-buffer-is-a-shared-contract), [§10.2](#102-zero_grad-and-set_to_nonetrue) |
+| Optimizer update wrapped in `no_grad` | [§10.3](#103-optimizerstep-and-torchno_grad) |
+| Activation memory saved on every `nn.Linear` call | [§11.1](#111-what-actually-gets-saved-for-backward) |
+
+The same pattern — Parameter tensors registered with a `nn.Module`, autograd-attached `grad_fn` on the output, `MmBackward0`-style VJP, `AccumulateGrad` writing into `.grad`, optimizer update wrapped in `no_grad` — recurs throughout modern PyTorch. The `self.W_Q(H)` walkthrough above is the smallest complete example that touches every one of them.
 
 ---
 
