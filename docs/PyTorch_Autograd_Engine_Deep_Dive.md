@@ -97,8 +97,8 @@ Notation:
 |---|---|
 | $\theta$ | a scalar or tensor parameter |
 | $\mathcal{L}$ | scalar loss |
-| $\nabla_\theta \mathcal{L} = \partial \mathcal{L} / \partial \theta$ | gradient of the loss with respect to $\theta$ |
-| $J_f(x) = \partial f / \partial x$ | Jacobian of a vector-valued function $f$ at input $x$ |
+| $\nabla\_\theta \mathcal{L} = \partial \mathcal{L} / \partial \theta$ | gradient of the loss with respect to $\theta$ |
+| $J\_f(x) = \partial f / \partial x$ | Jacobian of a vector-valued function $f$ at input $x$ |
 | $\bar{v} = \partial \mathcal{L} / \partial v$ | "cotangent" — the gradient flowing into $v$ during the backward pass |
 
 ---
@@ -123,13 +123,13 @@ Simple, but requires one forward pass per input coordinate (impractical when $x 
 
 ### 2.2 Forward-mode vs. reverse-mode AD
 
-Any composite function $f = f_n \circ f_{n-1} \circ \cdots \circ f_1$ has a Jacobian that factors by chain rule:
+Any composite function $f = f\_n \circ f\_{n-1} \circ \cdots \circ f\_1$ has a Jacobian that factors by chain rule:
 
 $$
 J_f(x) = J_{f_n}(y_{n-1}) \cdot J_{f_{n-1}}(y_{n-2}) \cdots J_{f_1}(x)
 $$
 
-where $y_k = f_k(y_{k-1})$ are the intermediate activations. The two AD modes differ in the *order* they multiply this product.
+where $y\_k = f\_k(y\_{k-1})$ are the intermediate activations. The two AD modes differ in the *order* they multiply this product.
 
 **Forward mode** propagates a tangent vector $\dot{x}$ left-to-right:
 
@@ -145,7 +145,7 @@ $$
 \bar{y}_{n-1} = J_{f_n}^\top \bar{y}_n, \quad \bar{y}_{n-2} = J_{f_{n-1}}^\top \bar{y}_{n-1}, \quad \ldots, \quad \bar{x} = J_{f_1}^\top \bar{y}_1
 $$
 
-Each step is a **vector-Jacobian product (VJP)**. Requires a forward pass to compute and cache the intermediate $y_k$ values (needed by the transposed Jacobians), followed by a reverse traversal. Cost is $O(\text{one forward pass})$ per output coordinate.
+Each step is a **vector-Jacobian product (VJP)**. Requires a forward pass to compute and cache the intermediate $y\_k$ values (needed by the transposed Jacobians), followed by a reverse traversal. Cost is $O(\text{one forward pass})$ per output coordinate.
 
 ```mermaid
 flowchart LR
@@ -376,7 +376,7 @@ The engine parallelizes independent branches via a thread pool (visible in `torc
 
 ### 5.2 The vector-Jacobian product (VJP)
 
-The VJP is the atomic operation of reverse-mode AD. For an operation $y = f(x_1, \ldots, x_k)$ with Jacobian $J_f$, the VJP is:
+The VJP is the atomic operation of reverse-mode AD. For an operation $y = f(x\_1, \ldots, x\_k)$ with Jacobian $J\_f$, the VJP is:
 
 $$
 (\bar{x}_1, \ldots, \bar{x}_k) = J_f^\top \bar{y}
@@ -394,8 +394,8 @@ Every backward rule in PyTorch is a VJP. Some examples:
 |---|---|
 | $y = x + c$ | $\bar{x} = \bar{y}$ |
 | $y = c \cdot x$ | $\bar{x} = c \cdot \bar{y}$ |
-| $y = x_1 + x_2$ | $\bar{x}_1 = \bar{y}$ and $\bar{x}_2 = \bar{y}$ |
-| $y = x_1 \cdot x_2$ | $\bar{x}_1 = x_2 \cdot \bar{y}$ and $\bar{x}_2 = x_1 \cdot \bar{y}$ |
+| $y = x\_1 + x\_2$ | $\bar{x}\_1 = \bar{y}$ and $\bar{x}\_2 = \bar{y}$ |
+| $y = x\_1 \cdot x\_2$ | $\bar{x}\_1 = x\_2 \cdot \bar{y}$ and $\bar{x}\_2 = x\_1 \cdot \bar{y}$ |
 | $y = x^2$ | $\bar{x} = 2x \cdot \bar{y}$ |
 | $y = \log x$ | $\bar{x} = \bar{y} / x$ |
 | $y = e^x$ | $\bar{x} = e^x \cdot \bar{y} = y \cdot \bar{y}$ |
@@ -430,7 +430,7 @@ v = torch.ones_like(y)    # or any weighting vector
 y.backward(gradient=v)    # equivalent to (y * v).sum().backward()
 ```
 
-This computes the VJP $\bar{x} = J_f^\top v$, which is why the mathematically canonical form of autograd is `torch.autograd.grad(outputs, inputs, grad_outputs=v)`: given a $v$, compute the VJP.
+This computes the VJP $\bar{x} = J\_f^\top v$, which is why the mathematically canonical form of autograd is `torch.autograd.grad(outputs, inputs, grad_outputs=v)`: given a $v$, compute the VJP.
 
 ---
 
@@ -438,13 +438,13 @@ This computes the VJP $\bar{x} = J_f^\top v$, which is why the mathematically ca
 
 The linear layer $y = xW^\top + b$ appears in every attention head, FFN, embedding, and unembedding. Its backward is fundamental.
 
-**Forward.** Given $x \in \mathbb{R}^{B \times d_{in}}$, $W \in \mathbb{R}^{d_{out} \times d_{in}}$, $b \in \mathbb{R}^{d_{out}}$:
+**Forward.** Given $x \in \mathbb{R}^{B \times d\_{in}}$, $W \in \mathbb{R}^{d\_{out} \times d\_{in}}$, $b \in \mathbb{R}^{d\_{out}}$:
 
 $$
 y = x W^\top + b, \quad y \in \mathbb{R}^{B \times d_{out}}
 $$
 
-**Backward.** Suppose the incoming cotangent is $\bar{y} \in \mathbb{R}^{B \times d_{out}}$. Then:
+**Backward.** Suppose the incoming cotangent is $\bar{y} \in \mathbb{R}^{B \times d\_{out}}$. Then:
 
 $$
 \bar{x} = \bar{y} W, \quad \bar{W} = \bar{y}^\top x, \quad \bar{b} = \sum_{i=1}^{B} \bar{y}_{i, :}
@@ -452,7 +452,7 @@ $$
 
 Two things worth noting:
 
-1. **The gradient into $W$ is a sum over the batch.** Each sample in the batch contributes an outer product $\bar{y}_i x_i^\top$; autograd sums them via the matmul.
+1. **The gradient into $W$ is a sum over the batch.** Each sample in the batch contributes an outer product $\bar{y}\_i x\_i^\top$; autograd sums them via the matmul.
 2. **The gradient into $b$ is a sum over the batch too**, since $b$ was broadcast across the batch dimension in the forward pass (§5.3).
 
 Verified explicitly in PyTorch:
@@ -508,7 +508,7 @@ $$
 J = \mathrm{diag}(p) - p p^\top
 $$
 
-The Jacobian is **not diagonal**: perturbing any single logit $z_j$ changes every probability $p_i$ (by softmax's normalization). This is the source of the "position coupling" during backward that appears repeatedly in transformer attention analysis.
+The Jacobian is **not diagonal**: perturbing any single logit $z\_j$ changes every probability $p\_i$ (by softmax's normalization). This is the source of the "position coupling" during backward that appears repeatedly in transformer attention analysis.
 
 **Softmax VJP.** Given $\bar{p}$, the gradient with respect to $z$ is:
 
@@ -518,7 +518,7 @@ $$
 
 where $\odot$ is elementwise product. This form is efficient — no explicit $V \times V$ Jacobian is ever materialized.
 
-**Cross-entropy loss.** For a one-hot target $y = e_{y^\star}$ (where $y^\star$ is the correct class index):
+**Cross-entropy loss.** For a one-hot target $y = e\_{y^\star}$ (where $y^\star$ is the correct class index):
 
 $$
 \mathcal{L} = -\log p_{y^\star} = -z_{y^\star} + \log \sum_{j} e^{z_j}
@@ -557,7 +557,7 @@ This clean rule is what backpropagates from the loss into the residual stream in
 
 ## 8. Case study I — gradient flow through Multi-Head Attention
 
-With the machinery of §5–7 in hand, we can now trace exactly how a loss at the output of a transformer becomes gradients on $W_Q, W_K, W_V, W_O$. This section is the promised deep dive into the backward pass that [§10.4 of `Multi-Head_Attention_in_Transformer_Block.md`](./Multi-Head_Attention_in_Transformer_Block.md#104-the-backward-pass-through-mha) alludes to.
+With the machinery of §5–7 in hand, we can now trace exactly how a loss at the output of a transformer becomes gradients on $W\_Q, W\_K, W\_V, W\_O$. This section is the promised deep dive into the backward pass that [§10.4 of `Multi-Head_Attention_in_Transformer_Block.md`](./Multi-Head_Attention_in_Transformer_Block.md#104-the-backward-pass-through-mha) alludes to.
 
 ### 8.1 The four matrices' gradients
 
@@ -581,13 +581,13 @@ $$
 
 Assuming autograd has propagated the loss backward through the residual and LayerNorm above MHA, we receive the cotangent $\overline{\mathrm{MHA}(H)} \in \mathbb{R}^{T \times d}$ at the output projection. We now walk backward.
 
-**Step 1 — Output projection $W_O$.** Let $C = \mathrm{Concat}(O^{(1)}, \ldots, O^{(h)}) \in \mathbb{R}^{T \times d}$. Then $\mathrm{MHA}(H) = C W_O$, so:
+**Step 1 — Output projection $W\_O$.** Let $C = \mathrm{Concat}(O^{(1)}, \ldots, O^{(h)}) \in \mathbb{R}^{T \times d}$. Then $\mathrm{MHA}(H) = C W\_O$, so:
 
 $$
 \bar{W}_O = C^\top \overline{\mathrm{MHA}(H)}, \quad \bar{C} = \overline{\mathrm{MHA}(H)} W_O^\top
 $$
 
-Split $\bar{C}$ back into per-head slices $\bar{O}^{(i)} \in \mathbb{R}^{T \times d_k}$.
+Split $\bar{C}$ back into per-head slices $\bar{O}^{(i)} \in \mathbb{R}^{T \times d\_k}$.
 
 **Step 2 — Value weighting.** Since $O^{(i)} = A^{(i)} V^{(i)}$:
 
@@ -595,15 +595,15 @@ $$
 \bar{A}^{(i)} = \bar{O}^{(i)} (V^{(i)})^\top, \quad \bar{V}^{(i)} = (A^{(i)})^\top \bar{O}^{(i)}
 $$
 
-**Step 3 — Softmax backward.** Applying the softmax VJP row-wise (§7) with cotangent $\bar{A}^{(i)}_{t, :}$:
+**Step 3 — Softmax backward.** Applying the softmax VJP row-wise (§7) with cotangent $\bar{A}^{(i)}\_{t, :}$:
 
 $$
 \bar{S}^{(i)}_{t, :} = A^{(i)}_{t, :} \odot \bar{A}^{(i)}_{t, :} - A^{(i)}_{t, :} \cdot (A^{(i)}_{t, :} \cdot \bar{A}^{(i)}_{t, :})
 $$
 
-This is where the **row-wise coupling** enters: $\bar{S}^{(i)}_{t, t'}$ depends on the *entire row* $A^{(i)}_{t, :}$, not just entry $t'$.
+This is where the **row-wise coupling** enters: $\bar{S}^{(i)}\_{t, t'}$ depends on the *entire row* $A^{(i)}\_{t, :}$, not just entry $t'$.
 
-**Step 4 — Scaled dot product.** Since $S^{(i)} = Q^{(i)} (K^{(i)})^\top / \sqrt{d_k}$:
+**Step 4 — Scaled dot product.** Since $S^{(i)} = Q^{(i)} (K^{(i)})^\top / \sqrt{d\_k}$:
 
 $$
 \bar{Q}^{(i)} = \bar{S}^{(i)} K^{(i)} / \sqrt{d_k}, \quad \bar{K}^{(i)} = (\bar{S}^{(i)})^\top Q^{(i)} / \sqrt{d_k}
@@ -631,18 +631,18 @@ $$
 
 Two important consequences:
 
-1. **Every position within a row participates in every other position's gradient.** The mask-out term $\sum_u A_{t,u} \bar{A}_{t,u}$ is a row-wide inner product.
-2. **Attention couples query position and key positions during backward.** A loss error at query position $t$ produces $\bar{Q}^{(i)}_t$, which then produces $\bar{K}^{(i)}_{t'}$ for every $t'$ that $t$ attended to. This is the mechanism by which the model learns long-range dependencies — the gradient of the loss at position $t$ flows to *every* key/value position that contributed to token $t$'s representation.
+1. **Every position within a row participates in every other position's gradient.** The mask-out term $\sum\_u A\_{t,u} \bar{A}\_{t,u}$ is a row-wide inner product.
+2. **Attention couples query position and key positions during backward.** A loss error at query position $t$ produces $\bar{Q}^{(i)}\_t$, which then produces $\bar{K}^{(i)}\_{t'}$ for every $t'$ that $t$ attended to. This is the mechanism by which the model learns long-range dependencies — the gradient of the loss at position $t$ flows to *every* key/value position that contributed to token $t$'s representation.
 
 ### 8.3 Causal mask and gradient blocking
 
-Recall (from Multi-Head_Attention_in_Transformer_Block.md §3.3) that the causal mask sets $S^{(i)}_{t, t'} = -\infty$ for $t' > t$ before the softmax. Consequently:
+Recall (from Multi-Head_Attention_in_Transformer_Block.md §3.3) that the causal mask sets $S^{(i)}\_{t, t'} = -\infty$ for $t' > t$ before the softmax. Consequently:
 
 $$
 A^{(i)}_{t, t'} = 0 \quad \text{for all } t' > t
 $$
 
-Because $A^{(i)}_{t, t'}$ is zero, the softmax VJP formula (§8.2) gives $\bar{S}^{(i)}_{t, t'} = 0$ for those positions. **No gradient flows from query position $t$ to key/value position $t' > t$.** The causal constraint is bidirectional: it prevents future tokens from being seen forward *and* prevents past losses from updating future-position weights backward.
+Because $A^{(i)}\_{t, t'}$ is zero, the softmax VJP formula (§8.2) gives $\bar{S}^{(i)}\_{t, t'} = 0$ for those positions. **No gradient flows from query position $t$ to key/value position $t' > t$.** The causal constraint is bidirectional: it prevents future tokens from being seen forward *and* prevents past losses from updating future-position weights backward.
 
 This is essential for autoregressive training: if the mask leaked in either direction, the model would learn from information that would not be available at inference time.
 
@@ -696,7 +696,7 @@ The second case study traces gradients through the training objective for a bi-e
 
 ### 9.1 The cosine similarity Jacobian
 
-The bi-encoder computes $s_{\mathrm{bi}}(q, d) = \cos(\phi_q(q), \phi_d(d))$. Let $u = \phi_q(q)$ and $v = \phi_d(d)$, both in $\mathbb{R}^{d}$. Then:
+The bi-encoder computes $s\_{\mathrm{bi}}(q, d) = \cos(\phi\_q(q), \phi\_d(d))$. Let $u = \phi\_q(q)$ and $v = \phi\_d(d)$, both in $\mathbb{R}^{d}$. Then:
 
 $$
 s = \cos(u, v) = \frac{u \cdot v}{\|u\| \|v\|}
@@ -720,13 +720,13 @@ Which is why sentence-transformer training pipelines usually L2-normalize embedd
 
 ### 9.2 InfoNCE as softmax cross-entropy
 
-The InfoNCE loss for query $q_i$ with positive $d_i^{+}$ is:
+The InfoNCE loss for query $q\_i$ with positive $d\_i^{+}$ is:
 
 $$
 \mathcal{L}_i = -\log \frac{\exp(s_i^{+} / \tau)}{\sum_{j \in \mathcal{B}} \exp(s_{ij} / \tau)}
 $$
 
-where $s_{ij} = s_{\mathrm{bi}}(q_i, d_j)$ and $\tau$ is the temperature. This is *literally* softmax cross-entropy on the scaled-similarity logits, with the positive index treated as the "class label".
+where $s\_{ij} = s\_{\mathrm{bi}}(q\_i, d\_j)$ and $\tau$ is the temperature. This is *literally* softmax cross-entropy on the scaled-similarity logits, with the positive index treated as the "class label".
 
 Autograd sees:
 
@@ -743,14 +743,14 @@ $$
 \frac{\partial \mathcal{L}_i}{\partial s_{ij}} = \frac{1}{\tau} \left( p_{ij} - \mathbb{1}[j = i] \right)
 $$
 
-where $p_{ij} = \exp(s_{ij} / \tau) / \sum_k \exp(s_{ik} / \tau)$ is the softmax over row $i$.
+where $p\_{ij} = \exp(s\_{ij} / \tau) / \sum\_k \exp(s\_{ik} / \tau)$ is the softmax over row $i$.
 
 ### 9.3 In-batch negatives and gradient distribution
 
-The gradient into the similarity $s_{ij}$ decomposes into two cases:
+The gradient into the similarity $s\_{ij}$ decomposes into two cases:
 
-- $j = i$ (the positive): $\partial \mathcal{L}_i / \partial s_{ii} = (p_{ii} - 1) / \tau < 0$. The gradient is **negative**, meaning gradient descent *increases* $s_{ii}$. This is the "pull together" force.
-- $j \neq i$ (a negative): $\partial \mathcal{L}_i / \partial s_{ij} = p_{ij} / \tau > 0$. The gradient is **positive**, meaning gradient descent *decreases* $s_{ij}$. This is the "push apart" force.
+- $j = i$ (the positive): $\partial \mathcal{L}\_i / \partial s\_{ii} = (p\_{ii} - 1) / \tau < 0$. The gradient is **negative**, meaning gradient descent *increases* $s\_{ii}$. This is the "pull together" force.
+- $j \neq i$ (a negative): $\partial \mathcal{L}\_i / \partial s\_{ij} = p\_{ij} / \tau > 0$. The gradient is **positive**, meaning gradient descent *decreases* $s\_{ij}$. This is the "push apart" force.
 
 Notice the elegant division of labor:
 
@@ -758,9 +758,9 @@ $$
 \frac{\partial \mathcal{L}_i}{\partial s_{ij}} = \frac{p_{ij} - \mathbb{1}[j=i]}{\tau}
 $$
 
-$\sum_j p_{ij} - \sum_j \mathbb{1}[j=i] = 1 - 1 = 0$, so within any single query row, the *pull* force on the positive exactly balances the total *push* force on all negatives. This is why InfoNCE is a stable objective: it neither collapses embeddings to a point nor pushes them to infinity.
+$\sum\_j p\_{ij} - \sum\_j \mathbb{1}[j=i] = 1 - 1 = 0$, so within any single query row, the *pull* force on the positive exactly balances the total *push* force on all negatives. This is why InfoNCE is a stable objective: it neither collapses embeddings to a point nor pushes them to infinity.
 
-The gradient then flows further back into $q_i$ and each $d_j$ via the cosine Jacobian (§9.1), and then into the transformer weights of $\phi_q$ and $\phi_d$ via the standard backward-through-network path. Every parameter of the bi-encoder receives gradient contribution from *every* query-document pair in the batch — a $B^2$-way coupling from a $B$-sized batch.
+The gradient then flows further back into $q\_i$ and each $d\_j$ via the cosine Jacobian (§9.1), and then into the transformer weights of $\phi\_q$ and $\phi\_d$ via the standard backward-through-network path. Every parameter of the bi-encoder receives gradient contribution from *every* query-document pair in the batch — a $B^2$-way coupling from a $B$-sized batch.
 
 ```mermaid
 flowchart TD
@@ -785,15 +785,15 @@ flowchart TD
 
 ### 9.4 Temperature as a gradient rescaler
 
-The temperature $\tau$ appears in the denominator of every gradient formula in §9.3. Small $\tau$ (e.g., 0.05) inflates gradient magnitudes; large $\tau$ (e.g., 1.0) deflates them. Additionally, small $\tau$ sharpens the softmax, so the softmax weights $p_{ij}$ concentrate on the highest-scoring negatives — meaning gradient signal is disproportionately allocated to hard negatives.
+The temperature $\tau$ appears in the denominator of every gradient formula in §9.3. Small $\tau$ (e.g., 0.05) inflates gradient magnitudes; large $\tau$ (e.g., 1.0) deflates them. Additionally, small $\tau$ sharpens the softmax, so the softmax weights $p\_{ij}$ concentrate on the highest-scoring negatives — meaning gradient signal is disproportionately allocated to hard negatives.
 
 The bi-encoder document's remark that *"embeddings are still random and all similarities cluster near zero"* at initialization means:
 
-- All $s_{ij} \approx 0$, so $s_{ij} / \tau \approx 0$ for any $\tau$.
-- Softmax of near-zero logits is uniform: $p_{ij} \approx 1/B$.
-- Therefore $\partial \mathcal{L}_i / \partial s_{ij} \approx (1/B - \mathbb{1}[j = i]) / \tau$ — tiny gradients, dominated by noise.
+- All $s\_{ij} \approx 0$, so $s\_{ij} / \tau \approx 0$ for any $\tau$.
+- Softmax of near-zero logits is uniform: $p\_{ij} \approx 1/B$.
+- Therefore $\partial \mathcal{L}\_i / \partial s\_{ij} \approx (1/B - \mathbb{1}[j = i]) / \tau$ — tiny gradients, dominated by noise.
 
-As training progresses, gradients through the softmax cross-entropy VJP shape every weight in $\phi_q$ and $\phi_d$, driving the similarity structure from near-uniform to peaked on the diagonal. This is autograd's mechanistic role in the "still random → semantically meaningful" trajectory described in §10.7 of the MHA document.
+As training progresses, gradients through the softmax cross-entropy VJP shape every weight in $\phi\_q$ and $\phi\_d$, driving the similarity structure from near-uniform to peaked on the diagonal. This is autograd's mechanistic role in the "still random → semantically meaningful" trajectory described in §10.7 of the MHA document.
 
 ---
 
@@ -853,10 +853,10 @@ The largest single memory consumer during training is *not* parameters, gradient
 
 Concretely, per attention head, the backward pass needs (at minimum):
 
-- $H^{(\ell)}$ (input to the block) — for gradients into $W_Q, W_K, W_V$
+- $H^{(\ell)}$ (input to the block) — for gradients into $W\_Q, W\_K, W\_V$
 - $Q, K, V$ or a scheme to recompute them
 - $A$ (attention weights) — for the softmax VJP and the gradient into $V$
-- $\mathrm{Concat}(O)$ — for the gradient into $W_O$
+- $\mathrm{Concat}(O)$ — for the gradient into $W\_O$
 
 For a GPT-2-small model (12 layers, 768 hidden, 1024 sequence, batch 8), this can easily consume tens of GB of GPU memory, dwarfing the ~500 MB of parameters.
 
@@ -1250,7 +1250,7 @@ three things happen when the `self.weight = nn.Parameter(...)` assignment runs:
 2. `nn.Module`'s custom `__setattr__` intercepts the assignment and registers the parameter in `self._parameters` under the name `'weight'`. This is what makes `model.parameters()` iterate over it and what makes `state_dict()` know its canonical name.
 3. Any downstream operation that consumes this tensor will produce a tracked (non-leaf) output whose `grad_fn` back-pointer references the operation node — the mechanism from §3.2.
 
-The **shape convention** is one PyTorch idiom worth calling out because it changes every VJP derivation you write against the source: PyTorch stores the linear layer's weight as $\mathbb{R}^{d_{\mathrm{out}} \times d_{\mathrm{in}}}$, which is the *transpose* of the matrix $W_Q \in \mathbb{R}^{d_{\mathrm{in}} \times d_{\mathrm{out}}}$ in the standard paper notation. Under this convention `F.linear(input, weight)` computes `input @ weight.T`, and the result equals `input @ W_Q` in paper notation. The transpose is baked into the storage.
+The **shape convention** is one PyTorch idiom worth calling out because it changes every VJP derivation you write against the source: PyTorch stores the linear layer's weight as $\mathbb{R}^{d\_{\mathrm{out}} \times d\_{\mathrm{in}}}$, which is the *transpose* of the matrix $W\_Q \in \mathbb{R}^{d\_{\mathrm{in}} \times d\_{\mathrm{out}}}$ in the standard paper notation. Under this convention `F.linear(input, weight)` computes `input @ weight.T`, and the result equals `input @ W_Q` in paper notation. The transpose is baked into the storage.
 
 ### A.2 The forward dispatch chain
 
@@ -1339,13 +1339,13 @@ Two properties worth internalizing:
 
 When `loss.backward()` eventually fires, the engine walks in reverse topological order until it reaches the `MmBackward0` node created above. What the node computes is the linear-layer VJP from §6, specialized to PyTorch's storage convention.
 
-Let `weight` $= W \in \mathbb{R}^{d_{\mathrm{out}} \times d_{\mathrm{in}}}$ be the stored parameter and `input` $= H \in \mathbb{R}^{B \times T \times d_{\mathrm{in}}}$ the saved input. The forward relation is:
+Let `weight` $= W \in \mathbb{R}^{d\_{\mathrm{out}} \times d\_{\mathrm{in}}}$ be the stored parameter and `input` $= H \in \mathbb{R}^{B \times T \times d\_{\mathrm{in}}}$ the saved input. The forward relation is:
 
 $$
 Q_{b, t, :} = H_{b, t, :} \cdot W^\top, \qquad Q \in \mathbb{R}^{B \times T \times d_{\mathrm{out}}}.
 $$
 
-Suppose the incoming cotangent from downstream is $\bar Q \in \mathbb{R}^{B \times T \times d_{\mathrm{out}}}$. The two outgoing cotangents produced by the node are:
+Suppose the incoming cotangent from downstream is $\bar Q \in \mathbb{R}^{B \times T \times d\_{\mathrm{out}}}$. The two outgoing cotangents produced by the node are:
 
 $$
 \bar H_{b, t, :} = \bar Q_{b, t, :} \cdot W \in \mathbb{R}^{d_{\mathrm{in}}}
